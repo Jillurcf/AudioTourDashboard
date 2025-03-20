@@ -1,0 +1,280 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap");
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+table {
+  font-family: "Poppins", sans-serif;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif !important;
+}
+/* .ant-layout .ant-layout-has-sider{
+  background-color: red !important;
+} */
+.ant-layout-sider-children {
+  background-color: white !important;
+}
+
+.ant-menu {
+  background-color: white !important;
+  /* color: black !important; */
+
+}
+.ant-menu-title-content {
+  color: #4964C6 !important
+}
+
+.ant-menu-item {
+  /* color: #4964C6; */
+}
+
+/* .ant-layout .ant-layout-header {
+  background-color: #F6F6F6 !important;
+} */
+.ant-layout-sider .ant-layout-sider-red .sidebar-menu{
+  background-color: red !important;
+  color: black !important
+}
+.ant-layout-sider-children .ant-menu-item-selected {
+  background: #F2F5FC !important;
+  font-weight: bold;
+  color: #4964C6 !important;
+ 
+}
+
+.ant-layout-content {
+  background-color:  #F6F6F6 !important;
+}
+
+span.ant-menu-title-content {
+  color: #fff;
+}
+/* Select opriont */
+.ant-select-selector {
+  background-color: transparent !important;
+  color: black !important;
+  box-shadow: transparent !important;
+}
+.ant-select-selector:hover {
+  background-color: 'none' !important;
+  color: black !important;
+  border-color: transparent !important;
+
+}
+.ant-select-outlined:not(.ant-select-customize-input) .ant-select-selector {
+  border: transparent !important;
+}
+.ant-select .ant-select-outlined{ 
+border-color: transparent !important;
+border: transparent !important;
+}
+.ant-select-selection-search {
+  border: transparent !important;
+  border-color: transparent !important;
+}
+.ant-select-selection-item{
+border: transparent !important;
+border-color: transparent !important;
+}
+.ant-select-selection-search-input{
+  border: transparent !important;
+  border-color: transparent !important;
+}
+
+
+ /* css of ant design table style   */
+ .ant-table-wrapper table {
+  background-color: #e9f4f3;
+  border-radius: 0;
+}
+:where(.css-dev-only-do-not-override-d2lrxs).ant-table-wrapper
+  .ant-table-thead
+  > tr
+  > th,
+:where(.css-dev-only-do-not-override-d2lrxs).ant-table-wrapper
+  .ant-table-thead
+  > tr
+  > td {
+  /* background: #1f8d84; */
+  color: white;
+  /* text-align: center; */
+  
+}
+.ant-table-wrapper
+  .ant-table-container
+  table
+  > thead
+  > tr:first-child
+  > *:first-child {
+  border-start-start-radius: 0px;
+  /* padding-left: 24px; */
+}
+.ant-table-wrapper .ant-table-tbody > tr:first-child > *:first-child {
+  /* padding-left: 24px; */
+}
+
+.ant-table-wrapper
+  .ant-table-container
+  table
+  > thead
+  > tr:first-child
+  > *:last-child {
+  border-start-end-radius: 0;
+  text-align: start;
+}
+
+
+/* data roe */
+.ant-table-wrapper .ant-table-tbody > tr > td
+{
+  border-bottom: none !important;
+}
+.ant-table-wrapper .ant-table-tbody > tr > td {
+ 
+  /* padding-left: 50px; */
+}
+.ant-table-wrapper
+  .ant-table-thead
+  > tr
+  > th:not(:last-child):not(.ant-table-selection-column):not(
+    .ant-table-row-expand-icon-cell
+  ):not([colspan])::before,
+:where(.css-dev-only-do-not-override-1pg9a38).ant-table-wrapper
+  .ant-table-thead
+  > tr
+  > td:not(:last-child):not(.ant-table-selection-column):not(
+    .ant-table-row-expand-icon-cell
+  ):not([colspan])::before {
+  width: 0;
+  height: 0;
+  content: "";
+}
+
+.ant-table-wrapper .ant-table-container table > tbody > tr > *:last-child {
+  text-align: start;
+}
+.ant-table-wrapper .ant-table-container table > tbody > tr {
+  color: #4e4e4e;
+}
+
+
+:where(.css-dev-only-do-not-override-11xg00t).ant-menu-light
+  .ant-menu-submenu-title,
+.ant-menu-submenu-title {
+  color: #fff;
+}
+
+.ant-pagination-item-active {
+  background: gray !important;
+  border: 0 !important;
+}
+
+.ant-pagination-item-active a {
+  color: #fff !important;
+}
+
+.ant-table-wrapper table {
+  background-color: transparent !important;
+  color: #fff;
+}
+.ant-table-wrapper .ant-table-thead > tr > th,
+.ant-table-wrapper .ant-table-thead > tr > td {
+  /* background: #dd1122; */
+  color: black;
+  border: 0 !important;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #3a3a3a;
+}
+
+.ant-modal .ant-modal-content {
+ 
+  color: #fff;
+}
+
+.ant-otp-input {
+  height: 80px;
+}
+
+/* jodit editor */
+.jodit,
+.jodit-container * {
+  /* background: #2e2d2d !important; */
+  /* color: wheat !important; */
+  border: none !important;
+
+}
+
+
+.jodit-react-container .jodit-wysiwyg{
+  min-height: 300px !important;
+}
+
+
+.auth-wrapper {
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(#2e2d2dc0, #2e2d2dd2), url("./assets/bg.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.ant-select-outlined:not(.ant-select-customize-input) .ant-select-selector {
+  background: #2e2d2d;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  color: #fff;
+}
+::placeholder {
+  color: #a19e9e !important;
+}
+
+/* Faq */
+
+.ant-collapse-arrow{
+  padding-top: 10px !important;
+  /* margin-top: 50px !important; */
+}
+
+.ant-tag-close-icon {
+  color: red ! important;
+  padding-left: 5px !important;
+}
+
+
+
+
+/* Styling for the picture card (previewed uploaded files) */
+.ant-upload-list .ant-upload-list-picture-card {
+  /* width: 100%; Ensure the width takes the full available space */
+  /* height: 100%; Adjust height based on container */
+  /* border: 1px solid red; Border for previewed picture */
+  /* background-color: red; Background color for the preview card */
+}
+
+/* Style for the file selection button area (Upload button) */
+/* .ant-upload-select {
+  width: 200px; 
+  height: 100px; 
+  border: 1px solid blue; 
+} */
+
+/* Style for the wrapper around the upload area */
+/* .ant-upload-wrapper {
+  width: 400px;  
+  border: 1px solid green; 
+} */
+
+/* Ensuring the picture card wrapper inside the upload component has the desired size */
+/* .ant-upload-picture-card-wrapper {
+  width: 100%;  
+  height: 100%; 
+  border: 1px solid blue;  
+} */

@@ -1,0 +1,22 @@
+@media (max-width: 768px) {
+    .sidebar-menu {
+      width: 20px;
+    }
+  
+    .header {
+      left: 85px;
+      width: calc(100% - 80px);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .sidebar-menu {
+      width: 60px;
+    }
+  
+    .header {
+      left: 60px;
+      width: calc(100% - 60px);
+    }
+  }
+  
