@@ -17,10 +17,10 @@ const EditAboutus: React.FC = () => {
   
   // Initialize the mutation
   const [postAboutus, { isLoading }] = usePostAboutusMutation();
-  const {data} = useGetAboutusQuery();
+  const {data} = useGetAboutusQuery({})
 
   useEffect(() => {
-    const existingData = data?.data?.about
+    const existingData = data?.page?.content;
     // Load initial data (replace with actual data fetching)
     setContent(existingData); // Use the mock data content
   }, []);
@@ -31,7 +31,11 @@ const EditAboutus: React.FC = () => {
       div.innerHTML = content;
       const cleanedContent = div.textContent || div.innerHTML || "";
       // Make the API call
-      const response = await postAboutus({ about: cleanedContent }).unwrap();
+      const formData = new FormData()
+      formData.append("type", "about")
+      formData.append("content", cleanedContent)
+      const response = await postAboutus(formData).unwrap();
+      console.log("aboutres", response)
 
       if (response) {
         Swal.fire({

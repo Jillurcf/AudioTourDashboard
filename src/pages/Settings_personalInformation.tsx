@@ -26,22 +26,22 @@ const SettingsPersonalInformation: React.FC = () => {
   const [form] = Form.useForm();
 
   // Fetch personal information data
-  const { data, isLoading, isError } = useGetPersonalInformationQuery();
+  const { data, isLoading, isError } = useGetPersonalInformationQuery({});
   const [updateImage] = useUpdateImageMutation();
   const [updatePersonalInformation, { isSuccess }] = useUpdatePersonalInformationMutation();
 
-  console.log(data);
+  console.log("personal information", data?.data);
 
   useEffect(() => {
     if (data && data.data) {
       form.setFieldsValue({
-        name: data.data.full_name,
-        email: data.data.email,
-        contact: data?.data?.contact
+        name: data.data?.name || "No contact found",
+        email: data.data.email || "No data found",
+        contact: data?.data?.phone || "No data found"
       });
 
-      if (data.data.image) {
-        const imageUrl = data.data.image;
+      if (data.data.avatar) {
+        const imageUrl = data.data.avatar;
         setFileList([
           {
             uid: '-1',
@@ -117,17 +117,17 @@ const SettingsPersonalInformation: React.FC = () => {
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     const formData = new FormData();
-    formData.append("_method", "PUT");
-    formData.append("full_name", values.name || "");
-    formData.append("contact", values.contact || "");
-    formData.append("old_password", values.oldPassword || "");
-    formData.append("new_password", values.newPassword || "");
-    formData.append("confirm_password", values.confirmPassword || "");
+    // formData.append("_method", "PUT");
+    formData.append("fullname", values.name || "");
+    formData.append("phone", values.contact || "");
+    // formData.append("old_password", values.oldPassword || "");
+    // formData.append("new_password", values.newPassword || "");
+    // formData.append("confirm_password", values.confirmPassword || "");
 
     // Check if a new image was uploaded
     if (fileList.length && fileList[0].originFileObj) {
       const imageFile = fileList[0].originFileObj as File;
-      formData.append("image", imageFile, imageFile.name);
+      formData.append("avatar", imageFile, imageFile.name);
     }
 
     try {
@@ -199,8 +199,8 @@ const SettingsPersonalInformation: React.FC = () => {
           <Input placeholder="Name" className='h-12' />
         </Form.Item>
         <Form.Item<FieldType>
-          name="name"
-          label="Name"
+          name="email"
+          label="Email"
           rules={[{ required: false, message: 'Please input your name!' }]}
         >
           <Input placeholder="Name" className='h-12' />
@@ -213,7 +213,7 @@ const SettingsPersonalInformation: React.FC = () => {
           <Input placeholder="Contact no" className='h-12' />
         </Form.Item>
         
-        <Form.Item<FieldType>
+        {/* <Form.Item<FieldType>
           name="oldPassword"
           label="Old Password"
           rules={[{ required: true, message: 'Please input your old password!' }]}
@@ -245,7 +245,7 @@ const SettingsPersonalInformation: React.FC = () => {
             className='h-12'
             iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
           />
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item>
           <Button type="primary" className='w-full h-12 bg-[#4964C6]' htmlType="submit">
             Save Changes

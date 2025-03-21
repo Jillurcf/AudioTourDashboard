@@ -7,7 +7,7 @@ const putUpdateFaqApi = baseApi.injectEndpoints({
                 console.log("Updating Faq with data:", data);
 
                 return {
-                    url: `/faqs/${id}`, 
+                    url: `/admin/faq/${id}`, 
                     method: 'PUT', 
                     body: data,
                 };

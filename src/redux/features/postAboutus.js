@@ -4,7 +4,7 @@ const postAboutusApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
       postAboutus: builder.mutation({
         query: (data) => ({
-          url: `/about`,
+          url: `/admin/pages/update`,
           method: 'POST',
           body: data,
          

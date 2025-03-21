@@ -3,7 +3,7 @@ import { baseApi } from "../api/baseApi";
 const getAboutusApi = baseApi.injectEndpoints({
     endpoints:(builder)=>({
         getAboutus:builder.query({
-            query:()=>`/about-us`,
+            query:()=>`/admin/pages/about`,
             providesTags:["Settings"],
         })
     })

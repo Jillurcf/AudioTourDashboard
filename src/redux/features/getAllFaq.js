@@ -3,7 +3,7 @@ import { baseApi } from "../api/baseApi";
 const getAllFaqApi = baseApi.injectEndpoints({
     endpoints:(builder) => ({
         getAllFaq:builder.query({
-            query:() => `/faqs`,
+            query:() => `/admin/faq`,
             
             providesTags: ["Faqs"],
         })

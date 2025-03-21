@@ -21,11 +21,13 @@ import {
 import { BsCartXFill, BsCartX } from "react-icons/bs";
 
 import { CiCreditCard1 } from "react-icons/ci";
+import { TbPassword } from "react-icons/tb";
 import settings from "../../assets/Images/dashboard/settings.png";
 import SubMenu from "antd/es/menu/SubMenu";
 import "./Styled_components.css";
 import { BiPieChartAlt2 } from "react-icons/bi";
-import { IoIosCard } from "react-icons/io";
+import { IoIosCard, } from "react-icons/io";
+import { PiPasswordFill } from "react-icons/pi";
 import { useGetProfileQuery } from "../../redux/features/getProfleApi";
 import { useGetNotificationsQuery } from "../../redux/features/getNotificationApi";
 import { usePostLogoutMutation } from "../../redux/features/postLoguout";
@@ -139,6 +141,12 @@ const menuItems: MenuItem[] = [
         title: "Terms & Conditions",
         icon: <CiCreditCard1 color="#4964C6" size={18} />,
         activeIcon: <IoIosCard color="#4964C6" size={18} />,
+      },
+      {
+        path: "/settings/changePassword",
+        title: "ChangePassword",
+        icon: <TbPassword color="#4964C6" size={18} />,
+        activeIcon: <PiPasswordFill color="#4964C6" size={18} />,
       },
     ],
   },

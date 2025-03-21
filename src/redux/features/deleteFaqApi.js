@@ -4,7 +4,7 @@ const deleteFaqApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         deleteFaq: builder.mutation({
             query: ({ id }) => ({
-                url: `/faqs/${id}`, 
+                url: `/admin/faq/${id}`, 
                 method: 'DELETE',
                 body: { _method: "DELETE" },
             }),

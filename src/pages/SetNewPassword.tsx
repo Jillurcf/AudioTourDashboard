@@ -3,8 +3,8 @@ import AuthWrapper from "../component/share/AuthWrapper";
 import { Button, Form, Input } from "antd";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/Images/Logo.png";
-import { usePostSetPasswordMutation } from "../redux/features/postSetPasswordApi";
 import Swal from "sweetalert2";
+import { usePostChangePasswordMutation } from "../redux/features/postChangePassword";
 
 interface SetNewPasswordFormValues {
   password: string;
@@ -14,8 +14,9 @@ interface SetNewPasswordFormValues {
 
 const SetNewPassword: React.FC = () => {
   const navigate = useNavigate();
-  const [setSetPassword, { isLoading: setPasswordLoading }] =
-    usePostSetPasswordMutation();
+  // const [setSetPassword, { isLoading: setPasswordLoading }] =
+  //   usePostSetPasswordMutation();
+  const [postChangePassword, { isSuccess, isLoading: isPasswordChanging }] = usePostChangePasswordMutation();
 
   const onFinish = async (values: SetNewPasswordFormValues) => {
     try {
@@ -37,7 +38,7 @@ const SetNewPassword: React.FC = () => {
       };
       console.log("Data to send:", data);
 
-      const response = await setSetPassword(data).unwrap();
+      const response = await postChangePassword(data).unwrap();
       console.log("API response:", response);
 
       if (response?.success === true) {
@@ -121,7 +122,7 @@ const SetNewPassword: React.FC = () => {
           <Button
             className="bg-[#4964C6] h-12 text-white text-lg w-full mt-6"
             htmlType="submit"
-            loading={setPasswordLoading}
+            loading={isPasswordChanging}
           >
             Sign In
           </Button>

@@ -26,6 +26,8 @@ import {
 } from "@react-google-maps/api";
 import { usePostCreateAudioMutation } from "../redux/features/postCreateAudioApi";
 import { useAllCategoriesQuery } from "../redux/features/getAllCategoriesApi";
+import { useGetSingleAudioQuery } from "../redux/features/getSingleAudio";
+import { usePostUpdateAudioMutation } from "../redux/features/postUpdateAudio";
 
 interface UserAction {
   sId: number;
@@ -58,9 +60,19 @@ const LocationPicker = () => {
 
 const Audios: React.FC<ProductListingProps> = () => {
   const [openAddAudioModal, setOpenAddAudioModal] = useState<boolean>(false); // State for Add Audio Modal
+  const [openEditModal, setOpenEditModal] = useState<boolean>(false); // State for Add Audio Modal
   const [fileList, setFileList] = useState<any[]>([]);
   const [bannerFileList, setBannerFileList] = useState<any[]>([]);
   const [audioCategory, setAudioCategory] = useState<string>("");
+  const [audioEdit, setAudioEdit] = useState({
+    title: "",
+    description: "",
+    banner: null,
+    audio: null,
+    category: "",
+    location: {},
+  });
+  console.log("audioEdit", audioEdit);
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState<
     number | null
   >(null);
@@ -78,11 +90,14 @@ const Audios: React.FC<ProductListingProps> = () => {
   const [autocomplete, setAutocomplete] = useState(null);
   const [title, setTitle] = useState("");
   const [des, setDes] = useState("");
+  const [audioId, setAudioId] = useState();
   const [form] = Form.useForm();
 
-  const [postCreateclub] = usePostCreateAudioMutation();
+  const [postCreateAudio] = usePostCreateAudioMutation();
+  const [postUpdateAudio] = usePostUpdateAudioMutation()
   const { data: categories } = useAllCategoriesQuery({});
-  console.log("categories", categories?.categories);
+  const { data: singleAudio } = useGetSingleAudioQuery(audioId);
+  console.log("singleData", singleAudio?.audio);
   console.log("upload file+++++++++++++++++++++", fileList);
   const googleMapApiKey = "AIzaSyC84mj3YlqcaBWRyi1pxloQ4n3JcbL93XY";
   useEffect(() => {
@@ -172,8 +187,10 @@ const Audios: React.FC<ProductListingProps> = () => {
     setCurrentPage(page);
   };
 
-  const handleUser = (values: UserAction) => {
-    setOpenAddAudioModal(true);
+  const handleUser = (action) => {
+    setOpenEditModal(true);
+    console.log("aciton", action);
+    setAudioId(action?.sId);
     // setUserData(values);
     // setOpenModel(true);
     // setType("user");
@@ -188,6 +205,11 @@ const Audios: React.FC<ProductListingProps> = () => {
   };
 
   const handleAddAudioSubmit = (values: any) => {
+    console.log("New Audio Data:", values);
+    // Logic to add audio data to the backend or state goes here
+    setOpenAddAudioModal(false); // Close modal after submission
+  };
+  const handleEditAudioSubmit = (values: any) => {
     console.log("New Audio Data:", values);
     // Logic to add audio data to the backend or state goes here
     setOpenAddAudioModal(false); // Close modal after submission
@@ -263,13 +285,13 @@ const Audios: React.FC<ProductListingProps> = () => {
       (category) => category?.title === value
     );
     const selectCategoryId = selectedCategory ? selectedCategory?.id : null;
-    setSelectedCategoryIndex(selectCategoryId)
+    setSelectedCategoryIndex(selectCategoryId);
   };
   const HandleCreateAudio = async () => {
     const formData = new FormData();
-    formData.append("category_id", selectedCategoryIndex)
-    formData.append("title", title)
-   
+    formData.append("category_id", selectedCategoryIndex);
+    formData.append("title", title);
+
     // if(fileList?.length && fileList[0]?.originFileObj){
     //   const bannerImg = fileList[0]?.originFileObj as File;
     //   formData.append("artwork", bannerImg, bannerImg?.name);
@@ -278,32 +300,124 @@ const Audios: React.FC<ProductListingProps> = () => {
     //   const audioFile = bannerFileList[0].originFileObj as File;
     //   formData.append("url", audioFile, audioFile.name);
     // }
-   
-// Check if the image file exists and append it to FormData
-// Append image file if it exists
-if (fileList?.length && fileList[0]?.originFileObj) {
-  const bannerImg = fileList[0].originFileObj as File;
-  formData.append("artwork", bannerImg, bannerImg.name); // Ensure the file is appended as a file
-}
 
-// Append audio file if it exists
-if (bannerFileList.length && bannerFileList[0].originFileObj) {
-  const audioFile = bannerFileList[0].originFileObj as File;
-  formData.append("url", audioFile, audioFile.name); // Ensure the file is appended as a file
-}
+    // Check if the image file exists and append it to FormData
+    // Append image file if it exists
+    if (fileList?.length && fileList[0]?.originFileObj) {
+      const bannerImg = fileList[0].originFileObj as File;
+      formData.append("artwork", bannerImg, bannerImg.name); // Ensure the file is appended as a file
+    }
 
+    // Append audio file if it exists
+    if (bannerFileList.length && bannerFileList[0].originFileObj) {
+      const audioFile = bannerFileList[0].originFileObj as File;
+      formData.append("url", audioFile, audioFile.name); // Ensure the file is appended as a file
+    }
 
-    formData.append("description", des)
-    formData.append("lat", latitude)
-    formData.append("lng", longitude)
-    formData.append("language", "english")
-    const res = await postCreateclub(formData);
+    formData.append("description", des);
+    formData.append("lat", latitude);
+    formData.append("lng", longitude);
+    formData.append("language", "english");
+    const res = await postCreateAudio(formData);
     notification.open({
-      message: 'Audio Added',
-      description: 'Your audio file has been successfully added.',
+      message: "Audio Added",
+      description: "Your audio file has been successfully added.",
+    });
+  };
+
+
+
+  const HandleEditAudio = async () => {
+    console.log("id", audioEdit?.category_id)
+    const formData = new FormData();
+    formData.append("category_id", audioEdit?.category_id);
+    formData.append("title", audioEdit?.title);
+
+    // if(fileList?.length && fileList[0]?.originFileObj){
+    //   const bannerImg = fileList[0]?.originFileObj as File;
+    //   formData.append("artwork", bannerImg, bannerImg?.name);
+    // }
+    // if (bannerFileList.length && bannerFileList[0].originFileObj) {
+    //   const audioFile = bannerFileList[0].originFileObj as File;
+    //   formData.append("url", audioFile, audioFile.name);
+    // }
+
+    // Check if the image file exists and append it to FormData
+    // Append image file if it exists
+    if (fileList?.length && fileList[0]?.originFileObj) {
+      const bannerImg = fileList[0].originFileObj as File;
+      formData.append("artwork", bannerImg, bannerImg.name); // Ensure the file is appended as a file
+    }
+
+    // Append audio file if it exists
+    if (bannerFileList.length && bannerFileList[0].originFileObj) {
+      const audioFile = bannerFileList[0].originFileObj as File;
+      formData.append("audio_file", audioFile, audioFile.name); // Ensure the file is appended as a file
+    }
+
+    formData.append("description", audioEdit?.description);
+    formData.append("lat", audioEdit?.lat);
+    formData.append("lng", audioEdit?.lng);
+    formData.append("language", "english");
+    // formData.append("_method", "PUT");
+    const res = await postUpdateAudio({data:formData, id: audioEdit?.id});
+    console.log("update Res", res)
+    notification.open({
+      message: "Audio updated",
+      description: "Your audio file has been successfully added.",
     });
   };
   console.log("indexCategory", selectedCategoryIndex);
+  useEffect(() => {
+    if (singleAudio?.audio) {
+      setAudioEdit(singleAudio?.audio);
+    }
+  }, [singleAudio?.audio]);
+
+  //   const { title, artwork, description } = categoryEdit || {};
+
+  // Set initial form values when audioEdit data is available
+  useEffect(() => {
+    console.log("audioEdit in useEffect", audioEdit);
+    if (audioEdit) {
+      form.setFieldsValue({
+        category: audioEdit?.category?.title,
+        title: audioEdit?.title,
+        description: audioEdit?.description,
+        location: `${audioEdit?.lat}, ${audioEdit?.lng}`,
+      });
+
+      // Set artwork for banner upload
+      if (audioEdit?.artwork) {
+        setBannerFileList([
+          {
+            uid: "-1", // Unique id to represent the existing image
+            name: "Existing Image", // Image name
+            status: "done", // Mark as done since it's already uploaded
+            url: audioEdit?.artwork, // URL of the existing image
+          },
+        ]);
+      }
+
+      // Set audio file for audio upload
+      if (audioEdit?.url) {
+        setFileList([
+          {
+            uid: "-1", // Unique id to represent the existing audio file
+            name: "Existing Audio", // Audio name
+            status: "done", // Mark as done since it's already uploaded
+            url: audioEdit?.url, // URL of the existing audio
+          },
+        ]);
+      }
+
+      // Set category based on audioEdit category
+      if (audioEdit?.category) {
+        setAudioCategory(audioEdit?.category.title);
+      }
+    }
+  }, [audioEdit, form]);
+
   return (
     <div className="py-4">
       <div>
@@ -491,6 +605,143 @@ if (bannerFileList.length && bannerFileList[0].originFileObj) {
                 block
               >
                 Add Audio
+              </Button>
+            </Form.Item>
+          </Form>
+        </Modal>
+        {/* Modal for edit audio */}
+        <Modal
+          title="Edit Audio"
+          visible={openEditModal}
+          onCancel={() => setOpenEditModal(false)} // Close modal
+          footer={null}
+          width={800}
+        >
+          <Form
+          form={form}
+          onFinish={handleEditAudioSubmit} layout="vertical">
+            {/* Upload Story Banner */}
+
+            {/* Upload Audio */}
+            <div className="flex justify-between w-[100%] gap-4">
+              <div className="w-[50%]">
+                <Form.Item label="Upload banner" name="audio">
+                  <div className="w-[] items-center justify-center flex h-full border border-y-2 border-gray-200 p-8 rounded-2xl">
+                    <Upload
+                      name="banner"
+                      listType="picture-card"
+                      fileList={fileList}
+                      onChange={handleUploadChange}
+                      style={{ width: "100%", height: "auto" }} // Set to width 100% for responsiveness and height 'auto'
+                    >
+                      {fileList.length < 1 && "+ Upload image"}
+                    </Upload>
+                  </div>
+                </Form.Item>
+              </div>
+              <div className="w-[50%]">
+                <Form.Item label="Upload audio" name="audio">
+                  <div className="w-[] items-center justify-center flex h-full border border-y-2 border-gray-200 p-8 rounded-2xl">
+                    <Upload
+                      name="audio"
+                      listType="picture-card"
+                      fileList={bannerFileList}
+                      onChange={handleUploadAudio}
+                      style={{ width: "100%", height: "auto" }} // Set to width 100% for responsiveness and height 'auto'
+                    >
+                      {bannerFileList.length < 1 && "+ Upload audio"}
+                    </Upload>
+                  </div>
+                </Form.Item>
+              </div>
+            </div>
+
+            {/* Category Selection */}
+            <Form.Item
+              label="Select Category"
+              name="category"
+              rules={[{ required: true, message: "Please select a category" }]}
+            >
+              <Select
+                className="border rounded-lg h-8"
+                defaultValue={audioCategory}
+                value={audioCategory}
+                onChange={handleCategoryChange}
+              >
+               {categories?.categories?.map((category, i) => (
+                  <Select.Option key={category?.id} value={category?.title}>
+                    {category?.title}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            {/* Title and Description */}
+            <Form.Item
+              label="Title"
+              name="title"
+              rules={[{ required: true, message: "Please enter the title" }]}
+            >
+              <Input
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Type here"
+              />
+            </Form.Item>
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[
+                { required: true, message: "Please enter a description" },
+              ]}
+            >
+              <Input.TextArea
+                onChange={(e) => setDes(e.target.value)}
+                placeholder="Type here"
+                rows={4}
+              />
+            </Form.Item>
+            {/* Location Picker */}
+            <Form.Item
+              name="location"
+              label="Location"
+              rules={[{ required: true, message: "Please enter the location" }]}
+            >
+              <LoadScript
+                googleMapsApiKey={googleMapApiKey}
+                libraries={["places"]}
+              >
+                <Autocomplete
+                  onLoad={(autocompleteInstance) =>
+                    setAutocomplete(autocompleteInstance)
+                  }
+                  onPlaceChanged={hanldlePlaceChanged}
+                >
+                  <Input className="w-full" placeholder="Search location" />
+                </Autocomplete>
+                {/* display google map */}
+                <GoogleMap
+                  mapContainerStyle={{
+                    borderRadius: "10px",
+
+                    width: "100%",
+                    height: "200px",
+                    marginTop: "16px",
+                  }}
+                  center={{ lat: latitude, lng: longitude }}
+                  zoom={12}
+                >
+                  <Marker position={{ lat: latitude, lng: longitude }} />
+                </GoogleMap>
+              </LoadScript>
+            </Form.Item>
+            {/* Upload Button */}
+            <Form.Item>
+              <Button
+                onClick={HandleEditAudio}
+                type="primary"
+                htmlType="submit"
+                block
+              >
+                Edit Audio
               </Button>
             </Form.Item>
           </Form>

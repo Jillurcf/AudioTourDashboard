@@ -27,6 +27,7 @@ import EditAboutus from "../pages/EditAboutus";
 import Audios from "../pages/Audios";
 import AudioMother from "../pages/AudioMother";
 import Subscription from "../pages/Subscription";
+import SettingsChangePassword from "../pages/SettingsChangePassword";
 
 
 
@@ -104,6 +105,10 @@ const router = createBrowserRouter([
             {
                 path: "/settings/termsAndCondition/edittermsAndConditions",
                 element: <AdminRoutes><EditTermsAndCondition /></AdminRoutes>
+            },
+            {
+                path: "/settings/changePassword",
+                element: <AdminRoutes><SettingsChangePassword /></AdminRoutes>
             },
         ]
     },

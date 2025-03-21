@@ -5,8 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useGetTermsAndConditionQuery } from "../redux/features/getTermsAndConditionApi";
 
 const SettingsTermsAndConditions = () => {
-  const { data, isLoading, isError } = useGetTermsAndConditionQuery();
-  console.log("9", data?.data?.id);
+  const { data, isLoading, isError } = useGetTermsAndConditionQuery({});
+  console.log("9", data?.page);
   const navigate = useNavigate();
 
   const handleBackSettings = () => {
@@ -39,7 +39,7 @@ const SettingsTermsAndConditions = () => {
         </div>
       </div>
       <div className="pl-10 text-justify py-12">
-        <p>{data?.data?.content}</p>
+        <p>{data?.page?.content}</p>
       </div>
       <div className="flex justify-end">
         <Button

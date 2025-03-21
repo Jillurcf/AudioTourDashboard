@@ -3,7 +3,7 @@ import { baseApi } from "../api/baseApi";
 const getTermsAndConditionApi = baseApi.injectEndpoints({
     endpoints:(builder)=>({
         getTermsAndCondition:builder.query({
-            query:()=>`/terms-and-conditions`,
+            query:()=>`/admin/pages/terms`,
             providesTags:["Settings"],
         })
     })

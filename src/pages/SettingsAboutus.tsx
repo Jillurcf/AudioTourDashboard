@@ -6,8 +6,9 @@ import { useGetAboutusQuery } from "../redux/features/getAboutusApi";
 
 
 
+
 const Settings_AboutUs = () => {
-  const { data, isLoading, isError } = useGetAboutusQuery()
+  const { data, isLoading, isError } = useGetAboutusQuery({})
   console.log("about", data)
   const navigate = useNavigate();
 
@@ -38,7 +39,7 @@ const Settings_AboutUs = () => {
   }
 
  
-  const content = data?.data?.about;
+  const content = data?.page?.content;
   const noData = !content || content.trim() === "";
 
   return (

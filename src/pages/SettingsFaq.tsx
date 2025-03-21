@@ -17,12 +17,12 @@ interface FaqData {
 }
 
 const SettingsFaq: React.FC = () => {
-  const {data, isLoading, isError} = useGetAllFaqQuery();
+  const { data, isLoading, isError } = useGetAllFaqQuery({});
   const [addFaq] = useAddFaqMutation();
   const [updateFaq] = useUpdateFaqMutation();
   const [deleteFaq] = useDeleteFaqMutation();
-  const allFaq = data?.data?.data || [];
-  console.log("24", data?.data?.data)
+  const allFaq = data || [];
+  console.log("allfaq", allFaq?.faqs);
 
   const [panelData, setPanelData] = useState<FaqData>({});
   const [editingPanel, setEditingPanel] = useState<string | null>(null);
@@ -32,7 +32,7 @@ const SettingsFaq: React.FC = () => {
 
   useEffect(() => {
     const initialData: FaqData = {};
-    allFaq.forEach((item: any) => {
+    allFaq?.faqs?.forEach((item: any) => {
       initialData[item.id] = {
         status: item.status,
         question: item.question,
@@ -102,7 +102,8 @@ const SettingsFaq: React.FC = () => {
       } else {
         const response = await updateFaq({
           id: key,
-          data: { ...faqDetails, _method: "PUT" },
+          data: { ...faqDetails },
+          // data: { ...faqDetails, _method: "PUT" },
         }).unwrap();
         if (response?.success) {
           setPanelData((prevState) => ({
@@ -193,8 +194,11 @@ const SettingsFaq: React.FC = () => {
   };
 
   const handleDelete = async (key: string) => {
+    console.log("delete")
     try {
-      await deleteFaq({ id: key }).unwrap();
+     
+      const deleteres =  await deleteFaq({ id: key }).unwrap();
+      console.log("deleteres", deleteres)
       const updatedData = { ...panelData };
       delete updatedData[key];
       setPanelData(updatedData);

@@ -5,8 +5,9 @@ import JoditEditor from "jodit-react";
 import { useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
 import React from "react";
-import { usePostTermsAndConditionMutation } from "../redux/features/postTermsAndCondition";
+
 import { useGetTermsAndConditionQuery } from "../redux/features/getTermsAndConditionApi";
+import { usePostAboutusMutation } from "../redux/features/postAboutus";
 
 const EditTermsAndCondition: React.FC = () => {
   const navigate = useNavigate();
@@ -14,11 +15,11 @@ const EditTermsAndCondition: React.FC = () => {
   const [content, setContent] = useState<string>("");
   
   // Initialize the mutation
-  const [postTermsAndCondition, { isLoading }] = usePostTermsAndConditionMutation();
-  const {data} = useGetTermsAndConditionQuery();
+  const [postAboutus, { isLoading }] = usePostAboutusMutation();
+  const {data} = useGetTermsAndConditionQuery({});
 
   useEffect(() => {
-    const existingData = data?.data?.content
+    const existingData = data?.page?.content
     // Load initial data (replace with actual data fetching)
     setContent(existingData); // Use the mock data content
   }, []);
@@ -29,8 +30,11 @@ const EditTermsAndCondition: React.FC = () => {
       const div = document.createElement("div");
       div.innerHTML = content;
       const cleanedContent = div.textContent || div.innerHTML || "";
+      const formData = new FormData()
+      formData.append("type", "terms")
+      formData.append("content", cleanedContent)
       // Make the API call
-      const response = await postTermsAndCondition({ content: cleanedContent, status: "1",}).unwrap();
+      const response = await postAboutus(formData).unwrap();
 
       if (response) {
         Swal.fire({

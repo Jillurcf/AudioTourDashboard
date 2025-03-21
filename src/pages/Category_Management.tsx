@@ -34,6 +34,7 @@ const Manage_Users = () => {
   const [userId, setUserId] = useState<number | null>(null);
   const [status, setStatus] = useState<string>("active");
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isCheck, setIscheck] = useState(0)
   const [categoryEdit, setCategoryEdit] = useState({
     title: "",
     description: "",
@@ -82,35 +83,14 @@ const Manage_Users = () => {
 
   const { title, artwork, description } = categoryEdit || {};
 
-  // useEffect(() => {
-  //   if (categoryEdit) {
-  //     form.setFieldsValue({
-  //       title: title,
-  //       artwork: artwork,
-  //       description: description,
-  //     });
-  //     if (categoryEdit?.artwork) {
-  //       form.setFieldsValue({
-  //         image: [
-  //           {
-  //             uid: "-1",
-  //             name: "Existing Image",
-  //             status: "done",
-  //             url: categoryEdit?.artwork,
-  //           },
-  //         ],
-  //       });
-  //     }
-  //   }
-  // }, [categoryEdit, form]);
-
+ 
   useEffect(() => {
     if (categoryEdit) {
       form.setFieldsValue({
         title: categoryEdit.title,
         description: categoryEdit.description,
       });
-  
+
       // Check if categoryEdit has artwork, if yes, set the existing image
       if (categoryEdit?.artwork) {
         form.setFieldsValue({
@@ -126,7 +106,7 @@ const Manage_Users = () => {
       }
     }
   }, [categoryEdit, form]);
-  
+
   const handleImageChanges = (info: any) => {
     // Handle image change: update the form state with new image file or file list
     if (info.fileList.length > 0) {
@@ -136,7 +116,7 @@ const Manage_Users = () => {
     }
   };
 
-  const [userDataSource, setUserDataSource] = React.useState(
+  const userDataSource =
     data?.categories?.map((user) => ({
       sId: user?.id,
       image: (
@@ -168,9 +148,8 @@ const Manage_Users = () => {
         featured: user?.is_featured,
         status: user.status,
       },
-    })) || []
-  );
-
+    })) || [];
+  console.log("userdata ++++++++++++++++", userDataSource);
   const columns = [
     {
       title: "Users",
@@ -231,7 +210,7 @@ const Manage_Users = () => {
       const updatedUserDataSource = userDataSource.map((user) =>
         user.sId === userId ? { ...user, featured: checked } : user
       );
-      setUserDataSource(updatedUserDataSource); // Update the local state
+      setIscheck(updatedUserDataSource); // Update the local state
       const formData = new FormData();
       formData.append("category_id", userId);
       // Call the Redux mutation to update the featured status in the backend
@@ -270,20 +249,20 @@ const Manage_Users = () => {
   const updateCategory = async () => {
     // Create FormData
     const formData = new FormData();
-  
+
     // Append title and description
     formData.append("title", categoryEdit?.title || "");
     formData.append("description", categoryEdit?.description || "");
-    formData.append("_method", "PUT");  // for PUT request simulation
-  
+    formData.append("_method", "PUT"); // for PUT request simulation
+
     // Get the image file from the form state
     const imageList = form.getFieldValue("image");
-  
+
     if (imageList && imageList.length > 0) {
       // If there is a new image selected/uploaded, append it to the FormData
       const imageFile = imageList[0]?.originFileObj as File;
       if (imageFile) {
-        formData.append("artwork", imageFile, imageFile.name);  // Append new image file
+        formData.append("artwork", imageFile, imageFile.name); // Append new image file
       }
     } else if (categoryEdit?.artwork) {
       // If no new image is uploaded and there's an existing image, do not append anything
@@ -293,26 +272,25 @@ const Manage_Users = () => {
       // const blob = await response.blob();
       // formData.append("artwork", blob, "existing_image.jpg");
     }
-  
+
     // Debug log to check FormData content
     console.log("formData: ", formData);
-    
+
     try {
       // Send the form data to the backend using the updateCategories function
       const res = await updateCategories({
         data: formData,
         id: categoryEdit?.id,
       }).unwrap();
-  
-      refetch();  // Optional: Re-fetch data after update
-      setOpenModel(false);  // Close the modal after success
-  
+
+      refetch(); // Optional: Re-fetch data after update
+      setOpenModel(false); // Close the modal after success
+
       console.log("Response:", res);
     } catch (error) {
       console.error("Error submitting category:", error);
     }
   };
-  
 
   const handleViewDetails = (id: number) => {
     setUserId(id);
