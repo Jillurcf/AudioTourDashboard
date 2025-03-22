@@ -126,12 +126,15 @@ const Subscription: React.FC = () => {
                   disabled
                   className="w-full"
                 />
+                   <p className="text-yellow-400">(*Audio limit -1 for unlimited audio) </p>
               </div>
+           
               <p className="text-sm text-green-500">
                 {plan.name
                   ? "Unlimited audios"
                   : `${plan?.plan_name} upto ${plan.audio_limit} audios`}
               </p>
+             
               <div className="mt-4 flex justify-center gap-4">
                 {plan?.plan_name === plan.plan_name ? (
                   <button

@@ -84,15 +84,16 @@ const SettingsFaq: React.FC = () => {
 
       if (isNewFaq) {
         const response = await addFaq(faqDetails).unwrap();
-        if (response?.success) {
-          const createdFaq = response.data;
+        console.log("faq response", response)
+        if (response?.success === true) {
+          const createdFaq = response?.faq;
 
           setPanelData((prevState) => ({
             ...prevState,
-            [createdFaq.id]: {
-              question: createdFaq.question,
-              answer: createdFaq.answer,
-              status: createdFaq.status,
+            [createdFaq?.id]: {
+              question: createdFaq?.question,
+              answer: createdFaq?.answer,
+              status: createdFaq?.status,
             },
           }));
           message.success("FAQ created successfully.");

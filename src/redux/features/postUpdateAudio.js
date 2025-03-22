@@ -5,7 +5,7 @@ const postUpdateAudioApi = baseApi.injectEndpoints({
     postUpdateAudio: builder.mutation({
       query: ({ data, id }) => ({
         url: `/admin/audio/${id}`,
-        method: "PUT",
+        method: "POST",
         body: data,
       }),
       invalidatesTags: ["Audio"],

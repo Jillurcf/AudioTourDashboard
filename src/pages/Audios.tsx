@@ -89,6 +89,7 @@ const Audios: React.FC<ProductListingProps> = () => {
   const [longitude, setLongitude] = useState<number | null>(null);
   const [autocomplete, setAutocomplete] = useState(null);
   const [title, setTitle] = useState("");
+  const [artist, setArtist] = useState("");
   const [des, setDes] = useState("");
   const [audioId, setAudioId] = useState();
   const [form] = Form.useForm();
@@ -271,6 +272,14 @@ const Audios: React.FC<ProductListingProps> = () => {
       if (location) {
         setLatitude(location.lat());
         setLongitude(location.lng());
+
+        setAudioEdit((prev) => ({
+          ...prev,
+          location: place.formatted_address,
+          latitude: location.lat(),
+          longitude: location.lng(),
+        }));
+
         form.setFieldsValue({ location: place.formatted_address });
         form.validateFields(["location"]);
       }
@@ -291,6 +300,7 @@ const Audios: React.FC<ProductListingProps> = () => {
     const formData = new FormData();
     formData.append("category_id", selectedCategoryIndex);
     formData.append("title", title);
+    formData.append("artist", artist);
 
     // if(fileList?.length && fileList[0]?.originFileObj){
     //   const bannerImg = fileList[0]?.originFileObj as File;
@@ -352,14 +362,14 @@ const Audios: React.FC<ProductListingProps> = () => {
     // Append audio file if it exists
     if (bannerFileList.length && bannerFileList[0].originFileObj) {
       const audioFile = bannerFileList[0].originFileObj as File;
-      formData.append("audio_file", audioFile, audioFile.name); // Ensure the file is appended as a file
+      formData.append("url", audioFile, audioFile.name); // Ensure the file is appended as a file
     }
 
     formData.append("description", audioEdit?.description);
     formData.append("lat", audioEdit?.lat);
     formData.append("lng", audioEdit?.lng);
     formData.append("language", "english");
-    // formData.append("_method", "PUT");
+    formData.append("_method", "PUT");
     const res = await postUpdateAudio({data:formData, id: audioEdit?.id});
     console.log("update Res", res)
     notification.open({
@@ -383,6 +393,7 @@ const Audios: React.FC<ProductListingProps> = () => {
       form.setFieldsValue({
         category: audioEdit?.category?.title,
         title: audioEdit?.title,
+        artist: audioEdit?.artist,
         description: audioEdit?.description,
         location: `${audioEdit?.lat}, ${audioEdit?.lng}`,
       });
@@ -550,6 +561,16 @@ const Audios: React.FC<ProductListingProps> = () => {
               />
             </Form.Item>
             <Form.Item
+              label="Artist"
+              name="artist"
+              rules={[{ required: false, message: "Please enter the title" }]}
+            >
+              <Input
+                onChange={(e) => setArtist(e.target.value)}
+                placeholder="Type here"
+              />
+            </Form.Item>
+            <Form.Item
               label="Description"
               name="description"
               rules={[
@@ -682,7 +703,17 @@ const Audios: React.FC<ProductListingProps> = () => {
               rules={[{ required: true, message: "Please enter the title" }]}
             >
               <Input
-                onChange={(e) => setTitle(e.target.value)}
+               onChange={(e) => setAudioEdit((prev) => ({ ...prev, title: e.target.value }))}
+                placeholder="Type here"
+              />
+            </Form.Item>
+            <Form.Item
+              label="Artist"
+              name="artist"
+              rules={[{ required: false, message: "Please enter the title" }]}
+            >
+              <Input
+                onChange={(e) => setAudioEdit((prev)=> ({...prev, artist: e.target.value}))}
                 placeholder="Type here"
               />
             </Form.Item>
@@ -694,7 +725,7 @@ const Audios: React.FC<ProductListingProps> = () => {
               ]}
             >
               <Input.TextArea
-                onChange={(e) => setDes(e.target.value)}
+                onChange={(e) => setAudioEdit((prev)=> ({...prev, description: e.target.value}))}
                 placeholder="Type here"
                 rows={4}
               />

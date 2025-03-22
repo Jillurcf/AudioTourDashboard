@@ -171,7 +171,8 @@ const content = (
 );
 
 const Dashboard: React.FC = () => {
-  // const { data, isLoading, isError } = useGetProfileQuery();
+  const { data, isLoading, isError } = useGetProfileQuery({});
+  console.log("data", data)
   // const { data: notification } = useGetNotificationsQuery();
   // const [postLogout] = usePostLogoutMutation();
   // console.log(data?.data?.full_name);
@@ -283,7 +284,7 @@ const Dashboard: React.FC = () => {
           // defaultSelectedKeys={["1"]}
           selectedKeys={[location.pathname]}
         >
-          <div className="flex h-[85vh] flex-col justify-between px-4">
+          <div className="flex h-[80vh] flex-col justify-between px-4">
             <div>
               {menuItems.map((item, index) => {
                 const isActive = location.pathname === item.path;
@@ -343,7 +344,7 @@ const Dashboard: React.FC = () => {
                 }
               })}
             </div>
-            <div className="flex gap-8 px-4 w-full">
+            <div className="flex gap-8 w-full">
               <div className="flex gap-2 w-3/4 items-center">
                 <Popover
                   className="cursor-pointer"
@@ -360,8 +361,8 @@ const Dashboard: React.FC = () => {
                   />
                 </Popover>
                 <div className="space-y-4">
-                  <h1 className="text-black">John Doe</h1>
-                  <h1 className="text-black">ex@ample.com</h1>
+                  <h1 className="text-black">{data?.data?.name}</h1>
+                  <h1 className="text-black">{data?.data?.email}</h1>
                 </div>
               </div>
               <Menu.Item
