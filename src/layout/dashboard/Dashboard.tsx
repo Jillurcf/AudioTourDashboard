@@ -234,7 +234,7 @@ const Dashboard: React.FC = () => {
         );
       case "/manage-users":
         return (
-          <h1 className="text-[#333333] font-bold text-[24px]">Manage Users</h1>
+          <h1 className="text-[#333333] font-bold text-[24px]">User List</h1>
         );
       case "/love":
         return <h1 className="text-[#333333] font-bold text-[24px]">Love</h1>;

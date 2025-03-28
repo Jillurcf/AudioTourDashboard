@@ -8,6 +8,7 @@ import {
   message,
   Table,
   notification,
+  Spin,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { Trash, Search, Pencil } from "lucide-react";
@@ -48,7 +49,7 @@ interface UserData {
   action: UserAction;
 }
 
-interface ProductListingProps {}
+interface ProductListingProps { }
 const LocationPicker = () => {
   return (
     <div>
@@ -60,7 +61,7 @@ const LocationPicker = () => {
 
 const AudioSpanish: React.FC<ProductListingProps> = () => {
   const [openAddAudioModal, setOpenAddAudioModal] = useState<boolean>(false); // State for Add Audio Modal
-    const [openEditModal, setOpenEditModal] = useState<boolean>(false); // State for Add Audio Modal
+  const [openEditModal, setOpenEditModal] = useState<boolean>(false); // State for Add Audio Modal
   const [fileList, setFileList] = useState<any[]>([]);
   const [bannerFileList, setBannerFileList] = useState<any[]>([]);
   const [audioCategory, setAudioCategory] = useState<string>("");
@@ -76,28 +77,31 @@ const AudioSpanish: React.FC<ProductListingProps> = () => {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [autocomplete, setAutocomplete] = useState(null);
+  const [locationPreview, setLocationPreview] = useState("");
+
+  console.log("location preview", locationPreview)
   const [title, setTitle] = useState("");
-   const [audioEdit, setAudioEdit] = useState({
-      title: "",
-      artist: "",
-      description: "",
-      banner: null,
-      audio: null,
-      category: "",
-      location: {},
-    });
+  const [audioEdit, setAudioEdit] = useState({
+    title: "",
+    artist: "",
+    description: "",
+    banner: null,
+    audio: null,
+    category: "",
+    location: {},
+  });
   const [des, setDes] = useState("");
   const [selectedCategoryIndex, setSelectedCategoryIndex] = useState<
     number | null
   >(null);
-   const [audioId, setAudioId] = useState();
+  const [audioId, setAudioId] = useState();
   const [form] = Form.useForm();
 
   const [postCreateclub] = usePostCreateAudioMutation();
-  
+
   const { data: categories } = useAllCategoriesQuery({});
-   const [postUpdateAudio] = usePostUpdateAudioMutation()
-    const { data: singleAudio } = useGetSingleAudioQuery(audioId);
+  const [postUpdateAudio] = usePostUpdateAudioMutation()
+  const { data: singleAudio } = useGetSingleAudioQuery(audioId);
 
   console.log("singleAudio", singleAudio);
 
@@ -115,7 +119,7 @@ const AudioSpanish: React.FC<ProductListingProps> = () => {
     isLoading,
     isError,
   } = useGetAllAudioSpanishQuery({});
-
+  // console.log("all audio spanish", userLists)
   const pageSize = 5;
 
   const data = userLists?.audios?.data?.map((item) => ({
@@ -195,8 +199,8 @@ const AudioSpanish: React.FC<ProductListingProps> = () => {
   };
 
   const handleUser = (action) => {
-   setOpenEditModal(true);
-   setAudioId( action?.sId)
+    setOpenEditModal(true);
+    setAudioId(action?.sId)
     // setUserData(values);
     // setOpenModel(true);
     // setType("user");
@@ -273,6 +277,7 @@ const AudioSpanish: React.FC<ProductListingProps> = () => {
         setLatitude(location.lat());
         setLongitude(location.lng());
         form.setFieldsValue({ location: place.formatted_address });
+        setLocationPreview(place.formatted_address)
         form.validateFields(["location"]);
       }
     } else {
@@ -331,101 +336,137 @@ const AudioSpanish: React.FC<ProductListingProps> = () => {
     setOpenAddAudioModal(false); // Close modal after submission
   };
 
-   const HandleEditAudio = async () => {
-      console.log("id", audioEdit?.category_id)
-      const formData = new FormData();
-      formData.append("category_id", audioEdit?.category_id);
-      formData.append("title", audioEdit?.title);
-  
-      // if(fileList?.length && fileList[0]?.originFileObj){
-      //   const bannerImg = fileList[0]?.originFileObj as File;
-      //   formData.append("artwork", bannerImg, bannerImg?.name);
-      // }
-      // if (bannerFileList.length && bannerFileList[0].originFileObj) {
-      //   const audioFile = bannerFileList[0].originFileObj as File;
-      //   formData.append("url", audioFile, audioFile.name);
-      // }
-  
-      // Check if the image file exists and append it to FormData
-      // Append image file if it exists
-      if (fileList?.length && fileList[0]?.originFileObj) {
-        const bannerImg = fileList[0].originFileObj as File;
-        formData.append("artwork", bannerImg, bannerImg.name); // Ensure the file is appended as a file
-      }
-  
-      // Append audio file if it exists
-      if (bannerFileList.length && bannerFileList[0].originFileObj) {
-        const audioFile = bannerFileList[0].originFileObj as File;
-        formData.append("url", audioFile, audioFile.name); // Ensure the file is appended as a file
-      }
-  
-      formData.append("description", audioEdit?.description);
-      formData.append("lat", audioEdit?.lat);
-      formData.append("lng", audioEdit?.lng);
-      formData.append("language", "spanish");
-      formData.append("_method", "PUT");
-      const res = await postUpdateAudio({data:formData, id: audioEdit?.id});
-      console.log("update Res", res)
-      notification.open({
-        message: "Audio updated",
-        description: "Your audio file has been successfully added.",
-      });
-    };
-    console.log("indexCategory", selectedCategoryIndex);
-    useEffect(() => {
-      if (singleAudio?.audio) {
-        setAudioEdit(singleAudio?.audio);
-      }
-    }, [singleAudio?.audio]);
-  
-    //   const { title, artwork, description } = categoryEdit || {};
-  
-    // Set initial form values when audioEdit data is available
-    useEffect(() => {
-      console.log("audioEdit in useEffect", audioEdit);
-      if (audioEdit) {
-        form.setFieldsValue({
-          category: audioEdit?.category?.title,
-          title: audioEdit?.title,
-          artist: audioEdit?.artist,
-          description: audioEdit?.description,
-          location: `${audioEdit?.lat}, ${audioEdit?.lng}`,
-        });
-  
-        // Set artwork for banner upload
-        if (audioEdit?.artwork) {
-          setBannerFileList([
-            {
-              uid: "-1", // Unique id to represent the existing image
-              name: "Existing Image", // Image name
-              status: "done", // Mark as done since it's already uploaded
-              url: audioEdit?.artwork, // URL of the existing image
-            },
-          ]);
-        }
-  
-        // Set audio file for audio upload
-        if (audioEdit?.url) {
-          setFileList([
-            {
-              uid: "-1", // Unique id to represent the existing audio file
-              name: "Existing Audio", // Audio name
-              status: "done", // Mark as done since it's already uploaded
-              url: audioEdit?.url, // URL of the existing audio
-            },
-          ]);
-        }
-  
-        // Set category based on audioEdit category
-        if (audioEdit?.category) {
-          setAudioCategory(audioEdit?.category.title);
-        }
-      }
-    }, [audioEdit, form]);
-  
+  const HandleEditAudio = async () => {
+    console.log("id", audioEdit?.category_id)
+    const formData = new FormData();
+    formData.append("category_id", audioEdit?.category_id);
+    formData.append("title", audioEdit?.title);
 
+    // if(fileList?.length && fileList[0]?.originFileObj){
+    //   const bannerImg = fileList[0]?.originFileObj as File;
+    //   formData.append("artwork", bannerImg, bannerImg?.name);
+    // }
+    // if (bannerFileList.length && bannerFileList[0].originFileObj) {
+    //   const audioFile = bannerFileList[0].originFileObj as File;
+    //   formData.append("url", audioFile, audioFile.name);
+    // }
+
+    // Check if the image file exists and append it to FormData
+    // Append image file if it exists
+    if (fileList?.length && fileList[0]?.originFileObj) {
+      const bannerImg = fileList[0].originFileObj as File;
+      formData.append("artwork", bannerImg, bannerImg.name); // Ensure the file is appended as a file
+    }
+
+    // Append audio file if it exists
+    if (bannerFileList.length && bannerFileList[0].originFileObj) {
+      const audioFile = bannerFileList[0].originFileObj as File;
+      formData.append("url", audioFile, audioFile.name); // Ensure the file is appended as a file
+    }
+
+    formData.append("description", audioEdit?.description);
+    formData.append("lat", audioEdit?.lat);
+    formData.append("lng", audioEdit?.lng);
+    formData.append("language", "spanish");
+    formData.append("_method", "PUT");
+    const res = await postUpdateAudio({ data: formData, id: audioEdit?.id });
+    console.log("update Res", res)
+    notification.open({
+      message: "Audio updated",
+      description: "Your audio file has been successfully added.",
+    });
+  };
+  console.log("indexCategory", selectedCategoryIndex);
+  useEffect(() => {
+    if (singleAudio?.audio) {
+      setAudioEdit(singleAudio?.audio);
+    }
+  }, [singleAudio?.audio]);
+
+  //   const { title, artwork, description } = categoryEdit || {};
+
+  // Set initial form values when audioEdit data is available
+  useEffect(() => {
+    console.log("audioEdit in useEffect", audioEdit);
+    if (audioEdit) {
+      const lat = audioEdit?.lat ? Number(audioEdit.lat) : 0;
+      const lng = audioEdit?.lng ? Number(audioEdit.lng) : 0;
+      console.log("lat & lng", lat, lng);
+      fetchAddress(lat, lng);
+
+      if (lat && lng) {
+        setLatitude(lat); // Set latitude from audioEdit
+        setLongitude(lng); // Set longitude from audioEdit
+      }
+      
+      form.setFieldsValue({
+        category: audioEdit?.category?.title || "Not exist",
+        title: audioEdit?.title || "Not exist",
+        artist: audioEdit?.artist || "Not exist",
+        description: audioEdit?.description || "Not existing",
+        location: `${audioEdit?.lat}, ${audioEdit?.lng}`,
+      });
+      setLocationPreview(audioEdit?.location?.address)
+
+      // Set artwork for banner upload
+      if (audioEdit?.artwork) {
+        setBannerFileList([
+          {
+            uid: "-1", // Unique id to represent the existing image
+            name: "Existing Image", // Image name
+            status: "done", // Mark as done since it's already uploaded
+            url: audioEdit?.artwork, // URL of the existing image
+          },
+        ]);
+      }
+
+      // Set audio file for audio upload
+      if (audioEdit?.url) {
+        setFileList([
+          {
+            uid: "-1", // Unique id to represent the existing audio file
+            name: "Existing Audio", // Audio name
+            status: "done", // Mark as done since it's already uploaded
+            url: audioEdit?.url, // URL of the existing audio
+          },
+        ]);
+      }
+
+      // Set category based on audioEdit category
+      if (audioEdit?.category) {
+        setAudioCategory(audioEdit?.category.title);
+      }
+    }
+  }, [audioEdit, form]);
+
+  const [address, setAddress] = useState("")
+  console.log("address", address)
+
+  const fetchAddress = async (lat, lng) => {
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data && data.display_name) {
+        setAddress(data.display_name);
+        setLocationPreview(data.display_name)
+      } else {
+        setAddress("Address not found");
+      }
+    } catch (error) {
+      console.error("Error fetching address:", error);
+      setAddress("Error fetching address");
+    }
+  };
   return (
     <div className="py-4">
+      {isLoading ? (
+        <Spin size="large" tip="Loading data..." />
+      ) : (
+        ""
+      )}
       <div>
         <div className="flex justify-end">
           {/* <Input
@@ -582,7 +623,7 @@ const AudioSpanish: React.FC<ProductListingProps> = () => {
             <Form.Item
               name="location"
               label="Location"
-              rules={[{ required: false,}]}
+              rules={[{ required: false, }]}
             >
               <LoadScript
                 googleMapsApiKey={googleMapApiKey}
@@ -594,7 +635,14 @@ const AudioSpanish: React.FC<ProductListingProps> = () => {
                   }
                   onPlaceChanged={hanldlePlaceChanged}
                 >
-                  <Input className="w-full" placeholder="Search location" />
+                  {/* <Input className="w-full" placeholder="Search location" /> */}
+                  <Input
+                    // defaultValue={audioEdit?.location?.address}
+                    className="w-full"
+                    placeholder="Search location"
+                    value={locationPreview} // Set the preview value in the input
+                    onChange={(e) => setLocationPreview(e.target.value)} // Update preview value on typing
+                  />
                 </Autocomplete>
                 {/* display google map */}
                 <GoogleMap
@@ -627,153 +675,160 @@ const AudioSpanish: React.FC<ProductListingProps> = () => {
         </Modal>
 
         {/* Edit adudio */}
-         {/* Modal for edit audio */}
-                <Modal
-                  title="Edit Audio"
-                  visible={openEditModal}
-                  onCancel={() => setOpenEditModal(false)} // Close modal
-                  footer={null}
-                  width={800}
+        {/* Modal for edit audio */}
+        <Modal
+          title="Edit Audio"
+          visible={openEditModal}
+          onCancel={() => setOpenEditModal(false)} // Close modal
+          footer={null}
+          width={800}
+        >
+          <Form
+            form={form}
+            onFinish={handleEditAudioSubmit} layout="vertical">
+            {/* Upload Story Banner */}
+
+            {/* Upload Audio */}
+            <div className="flex justify-between w-[100%] gap-4">
+              <div className="w-[50%]">
+                <Form.Item label="Upload banner" name="audio">
+                  <div className="w-[] items-center justify-center flex h-full border border-y-2 border-gray-200 p-8 rounded-2xl">
+                    <Upload
+                      name="banner"
+                      listType="picture-card"
+                      fileList={fileList}
+                      onChange={handleUploadChange}
+                      style={{ width: "100%", height: "auto" }} // Set to width 100% for responsiveness and height 'auto'
+                    >
+                      {fileList.length < 1 && "+ Upload image"}
+                    </Upload>
+                  </div>
+                </Form.Item>
+              </div>
+              <div className="w-[50%]">
+                <Form.Item label="Upload audio" name="audio">
+                  <div className="w-[] items-center justify-center flex h-full border border-y-2 border-gray-200 p-8 rounded-2xl">
+                    <Upload
+                      name="audio"
+                      listType="picture-card"
+                      fileList={bannerFileList}
+                      onChange={handleUploadAudio}
+                      style={{ width: "100%", height: "auto" }} // Set to width 100% for responsiveness and height 'auto'
+                    >
+                      {bannerFileList.length < 1 && "+ Upload audio"}
+                    </Upload>
+                  </div>
+                </Form.Item>
+              </div>
+            </div>
+
+            {/* Category Selection */}
+            <Form.Item
+              label="Select Category"
+              name="category"
+              rules={[{ required: true, message: "Please select a category" }]}
+            >
+              <Select
+                className="border rounded-lg h-8"
+                defaultValue={audioCategory}
+                value={audioCategory}
+                onChange={handleCategoryChange}
+              >
+                {categories?.categories?.map((category, i) => (
+                  <Select.Option key={category?.id} value={category?.title}>
+                    {category?.title}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            {/* Title and Description */}
+            <Form.Item
+              label="Title"
+              name="title"
+              rules={[{ required: true, message: "Please enter the title" }]}
+            >
+              <Input
+                onChange={(e) => setAudioEdit((prev) => ({ ...prev, title: e.target.value }))}
+                placeholder="Type here"
+              />
+            </Form.Item>
+            <Form.Item
+              label="Artist"
+              name="artist"
+              rules={[{ required: false, message: "Please enter the title" }]}
+            >
+              <Input
+                onChange={(e) => setAudioEdit((prev) => ({ ...prev, artist: e.target.value }))}
+                placeholder="Type here"
+              />
+            </Form.Item>
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[
+                { required: true, message: "Please enter a description" },
+              ]}
+            >
+              <Input.TextArea
+                onChange={(e) => setAudioEdit((prev) => ({ ...prev, description: e.target.value }))}
+                placeholder="Type here"
+                rows={4}
+              />
+            </Form.Item>
+            {/* Location Picker */}
+            <Form.Item
+              name="location"
+              label="Location"
+              rules={[{ required: true, message: "Please enter the location" }]}
+            >
+              <LoadScript
+                googleMapsApiKey={googleMapApiKey}
+                libraries={["places"]}
+              >
+                <Autocomplete
+                  onLoad={(autocompleteInstance) =>
+                    setAutocomplete(autocompleteInstance)
+                  }
+                  onPlaceChanged={hanldlePlaceChanged}
                 >
-                  <Form
-                  form={form}
-                  onFinish={handleEditAudioSubmit} layout="vertical">
-                    {/* Upload Story Banner */}
-        
-                    {/* Upload Audio */}
-                    <div className="flex justify-between w-[100%] gap-4">
-                      <div className="w-[50%]">
-                        <Form.Item label="Upload banner" name="audio">
-                          <div className="w-[] items-center justify-center flex h-full border border-y-2 border-gray-200 p-8 rounded-2xl">
-                            <Upload
-                              name="banner"
-                              listType="picture-card"
-                              fileList={fileList}
-                              onChange={handleUploadChange}
-                              style={{ width: "100%", height: "auto" }} // Set to width 100% for responsiveness and height 'auto'
-                            >
-                              {fileList.length < 1 && "+ Upload image"}
-                            </Upload>
-                          </div>
-                        </Form.Item>
-                      </div>
-                      <div className="w-[50%]">
-                        <Form.Item label="Upload audio" name="audio">
-                          <div className="w-[] items-center justify-center flex h-full border border-y-2 border-gray-200 p-8 rounded-2xl">
-                            <Upload
-                              name="audio"
-                              listType="picture-card"
-                              fileList={bannerFileList}
-                              onChange={handleUploadAudio}
-                              style={{ width: "100%", height: "auto" }} // Set to width 100% for responsiveness and height 'auto'
-                            >
-                              {bannerFileList.length < 1 && "+ Upload audio"}
-                            </Upload>
-                          </div>
-                        </Form.Item>
-                      </div>
-                    </div>
-        
-                    {/* Category Selection */}
-                    <Form.Item
-                      label="Select Category"
-                      name="category"
-                      rules={[{ required: true, message: "Please select a category" }]}
-                    >
-                      <Select
-                        className="border rounded-lg h-8"
-                        defaultValue={audioCategory}
-                        value={audioCategory}
-                        onChange={handleCategoryChange}
-                      >
-                       {categories?.categories?.map((category, i) => (
-                          <Select.Option key={category?.id} value={category?.title}>
-                            {category?.title}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                    {/* Title and Description */}
-                    <Form.Item
-                      label="Title"
-                      name="title"
-                      rules={[{ required: true, message: "Please enter the title" }]}
-                    >
-                      <Input
-                       onChange={(e) => setAudioEdit((prev) => ({ ...prev, title: e.target.value }))}
-                        placeholder="Type here"
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      label="Artist"
-                      name="artist"
-                      rules={[{ required: false, message: "Please enter the title" }]}
-                    >
-                      <Input
-                        onChange={(e) => setAudioEdit((prev)=> ({...prev, artist: e.target.value}))}
-                        placeholder="Type here"
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      label="Description"
-                      name="description"
-                      rules={[
-                        { required: true, message: "Please enter a description" },
-                      ]}
-                    >
-                      <Input.TextArea
-                        onChange={(e) => setAudioEdit((prev)=> ({...prev, description: e.target.value}))}
-                        placeholder="Type here"
-                        rows={4}
-                      />
-                    </Form.Item>
-                    {/* Location Picker */}
-                    <Form.Item
-                      name="location"
-                      label="Location"
-                      rules={[{ required: true, message: "Please enter the location" }]}
-                    >
-                      <LoadScript
-                        googleMapsApiKey={googleMapApiKey}
-                        libraries={["places"]}
-                      >
-                        <Autocomplete
-                          onLoad={(autocompleteInstance) =>
-                            setAutocomplete(autocompleteInstance)
-                          }
-                          onPlaceChanged={hanldlePlaceChanged}
-                        >
-                          <Input className="w-full" placeholder="Search location" />
-                        </Autocomplete>
-                        {/* display google map */}
-                        <GoogleMap
-                          mapContainerStyle={{
-                            borderRadius: "10px",
-        
-                            width: "100%",
-                            height: "200px",
-                            marginTop: "16px",
-                          }}
-                          center={{ lat: latitude, lng: longitude }}
-                          zoom={12}
-                        >
-                          <Marker position={{ lat: latitude, lng: longitude }} />
-                        </GoogleMap>
-                      </LoadScript>
-                    </Form.Item>
-                    {/* Upload Button */}
-                    <Form.Item>
-                      <Button
-                        onClick={HandleEditAudio}
-                        type="primary"
-                        htmlType="submit"
-                        block
-                      >
-                        Edit Audio
-                      </Button>
-                    </Form.Item>
-                  </Form>
-                </Modal>
+                  {/* <Input className="w-full" placeholder="Search location" /> */}
+                  <Input
+                    // defaultValue={audioEdit?.location?.address}
+                    className="w-full"
+                    placeholder="Search location"
+                    value={locationPreview} // Set the preview value in the input
+                    onChange={(e) => setLocationPreview(e.target.value)} // Update preview value on typing
+                  />
+                </Autocomplete>
+                {/* display google map */}
+                <GoogleMap
+                  mapContainerStyle={{
+                    borderRadius: "10px",
+
+                    width: "100%",
+                    height: "200px",
+                    marginTop: "16px",
+                  }}
+                  center={{ lat: latitude, lng: longitude }}
+                  zoom={12}
+                >
+                  <Marker position={{ lat: latitude, lng: longitude }} />
+                </GoogleMap>
+              </LoadScript>
+            </Form.Item>
+            {/* Upload Button */}
+            <Form.Item>
+              <Button
+                onClick={HandleEditAudio}
+                type="primary"
+                htmlType="submit"
+                block
+              >
+                Edit Audio
+              </Button>
+            </Form.Item>
+          </Form>
+        </Modal>
       </div>
     </div>
   );

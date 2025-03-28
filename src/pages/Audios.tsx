@@ -9,6 +9,7 @@ import {
   Table,
   Alert,
   notification,
+  Spin,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { Trash, Search, Pencil } from "lucide-react";
@@ -48,7 +49,7 @@ interface UserData {
   action: UserAction;
 }
 
-interface ProductListingProps {}
+interface ProductListingProps { }
 const LocationPicker = () => {
   return (
     <div>
@@ -64,6 +65,7 @@ const Audios: React.FC<ProductListingProps> = () => {
   const [fileList, setFileList] = useState<any[]>([]);
   const [bannerFileList, setBannerFileList] = useState<any[]>([]);
   const [audioCategory, setAudioCategory] = useState<string>("");
+  const [locationPreview, setLocationPreview] = useState(""); // State to track the input location
   const [audioEdit, setAudioEdit] = useState({
     title: "",
     description: "",
@@ -98,18 +100,20 @@ const Audios: React.FC<ProductListingProps> = () => {
   const [postUpdateAudio] = usePostUpdateAudioMutation()
   const { data: categories } = useAllCategoriesQuery({});
   const { data: singleAudio } = useGetSingleAudioQuery(audioId);
-  console.log("singleData", singleAudio?.audio);
-  console.log("upload file+++++++++++++++++++++", fileList);
+
+  console.log("Single Audio", singleAudio)
+  console.log("lat + lng ++++++++++++++++", latitude, longitude)
+  console.log("lat + lng ++++++++++++++++", typeof latitude, typeof longitude)
   const googleMapApiKey = "AIzaSyC84mj3YlqcaBWRyi1pxloQ4n3JcbL93XY";
   useEffect(() => {
-    console.log("fileList:", fileList);
+    // console.log("fileList:", fileList);
     if (!Array.isArray(fileList)) {
       setFileList([]);
     }
   }, [fileList]);
 
   const { data: userLists, isLoading, isError } = useGetAllAudiosQuery({});
-  console.log("audioCategory", audioCategory);
+  console.log("UserLists ++++++", userLists);
   const pageSize = 5;
 
   const data = userLists?.audios?.data?.map((item) => ({
@@ -206,7 +210,7 @@ const Audios: React.FC<ProductListingProps> = () => {
   };
 
   const handleAddAudioSubmit = (values: any) => {
-    console.log("New Audio Data:", values);
+    // console.log("New Audio Data:", values);
     // Logic to add audio data to the backend or state goes here
     setOpenAddAudioModal(false); // Close modal after submission
   };
@@ -268,6 +272,7 @@ const Audios: React.FC<ProductListingProps> = () => {
   const hanldlePlaceChanged = () => {
     if (autocomplete !== null) {
       const place = autocomplete.getPlace();
+      console.log("Place from map", place)
       const location = place.geometry?.location;
       if (location) {
         setLatitude(location.lat());
@@ -281,6 +286,7 @@ const Audios: React.FC<ProductListingProps> = () => {
         }));
 
         form.setFieldsValue({ location: place.formatted_address });
+        setLocationPreview(place.formatted_address)
         form.validateFields(["location"]);
       }
     } else {
@@ -329,10 +335,15 @@ const Audios: React.FC<ProductListingProps> = () => {
     formData.append("lng", longitude);
     formData.append("language", "english");
     const res = await postCreateAudio(formData);
-    notification.open({
-      message: "Audio Added",
-      description: "Your audio file has been successfully added.",
-    });
+    if(res?.data.success === true){
+      notification.open({
+        message: "Audio Added",
+        description: "Your audio file has been successfully added.",
+      });
+    }else{
+      Alert("Please try again")
+    }
+   
   };
 
 
@@ -370,7 +381,7 @@ const Audios: React.FC<ProductListingProps> = () => {
     formData.append("lng", audioEdit?.lng);
     formData.append("language", "english");
     formData.append("_method", "PUT");
-    const res = await postUpdateAudio({data:formData, id: audioEdit?.id});
+    const res = await postUpdateAudio({ data: formData, id: audioEdit?.id });
     console.log("update Res", res)
     notification.open({
       message: "Audio updated",
@@ -388,15 +399,30 @@ const Audios: React.FC<ProductListingProps> = () => {
 
   // Set initial form values when audioEdit data is available
   useEffect(() => {
-    console.log("audioEdit in useEffect", audioEdit);
+    console.log("audioEdit in useEffect", audioEdit?.location?.address);
     if (audioEdit) {
+      // setLatitude(audioEdit?.lat);
+      // setLongitude(audioEdit?.lng);
+
+      const lat = audioEdit?.lat ? Number(audioEdit.lat) : 0;
+      const lng = audioEdit?.lng ? Number(audioEdit.lng) : 0;
+      console.log("lat & lng", lat, lng);
+
+      fetchAddress(lat, lng);
+      if (lat && lng) {
+        setLatitude(lat); // Set latitude from audioEdit
+        setLongitude(lng); // Set longitude from audioEdit
+      }
+
       form.setFieldsValue({
         category: audioEdit?.category?.title,
         title: audioEdit?.title,
-        artist: audioEdit?.artist,
+        artist: audioEdit?.artist || "Not exist",
         description: audioEdit?.description,
-        location: `${audioEdit?.lat}, ${audioEdit?.lng}`,
+        // location: audioEdit?.location?.address || "",
+       
       });
+      // setLocationPreview(audioEdit?.location?.address)
 
       // Set artwork for banner upload
       if (audioEdit?.artwork) {
@@ -428,9 +454,37 @@ const Audios: React.FC<ProductListingProps> = () => {
       }
     }
   }, [audioEdit, form]);
+const [address, setAddress] = useState("")
+console.log("address", address)
+
+  const fetchAddress = async (lat, lng) => {
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
+  
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+  
+      if (data && data.display_name) {
+        setAddress(data.display_name);
+        setLocationPreview(data.display_name)
+      } else {
+        setAddress("Address not found");
+      }
+    } catch (error) {
+      console.error("Error fetching address:", error);
+      setAddress("Error fetching address");
+    }
+  };
+  
+
 
   return (
     <div className="py-4">
+      {isLoading ? (
+        <Spin size="large" tip="Loading data..." />
+      ) : (
+        ""
+      )}
       <div>
         <div className="flex justify-end">
           {/* <Input
@@ -583,11 +637,11 @@ const Audios: React.FC<ProductListingProps> = () => {
                 rows={4}
               />
             </Form.Item>
-            {/* Location Picker */}
+            {/*   Location Picker */}
             <Form.Item
               name="location"
               label="Location"
-              rules={[{ required: true, message: "Please enter the location" }]}
+              rules={[{ required: true, message: "" }]}
             >
               <LoadScript
                 googleMapsApiKey={googleMapApiKey}
@@ -599,7 +653,14 @@ const Audios: React.FC<ProductListingProps> = () => {
                   }
                   onPlaceChanged={hanldlePlaceChanged}
                 >
-                  <Input className="w-full" placeholder="Search location" />
+                  {/* <Input className="w-full" placeholder="Search location" /> */}
+                  <Input
+                  // defaultValue={audioEdit?.location?.address}
+                    className="w-full"
+                    placeholder="Search location"
+                    value={locationPreview} // Set the preview value in the input
+                    onChange={(e) => setLocationPreview(e.target.value)} // Update preview value on typing
+                  />
                 </Autocomplete>
                 {/* display google map */}
                 <GoogleMap
@@ -639,8 +700,8 @@ const Audios: React.FC<ProductListingProps> = () => {
           width={800}
         >
           <Form
-          form={form}
-          onFinish={handleEditAudioSubmit} layout="vertical">
+            form={form}
+            onFinish={handleEditAudioSubmit} layout="vertical">
             {/* Upload Story Banner */}
 
             {/* Upload Audio */}
@@ -689,7 +750,7 @@ const Audios: React.FC<ProductListingProps> = () => {
                 value={audioCategory}
                 onChange={handleCategoryChange}
               >
-               {categories?.categories?.map((category, i) => (
+                {categories?.categories?.map((category, i) => (
                   <Select.Option key={category?.id} value={category?.title}>
                     {category?.title}
                   </Select.Option>
@@ -703,7 +764,7 @@ const Audios: React.FC<ProductListingProps> = () => {
               rules={[{ required: true, message: "Please enter the title" }]}
             >
               <Input
-               onChange={(e) => setAudioEdit((prev) => ({ ...prev, title: e.target.value }))}
+                onChange={(e) => setAudioEdit((prev) => ({ ...prev, title: e.target.value }))}
                 placeholder="Type here"
               />
             </Form.Item>
@@ -713,7 +774,7 @@ const Audios: React.FC<ProductListingProps> = () => {
               rules={[{ required: false, message: "Please enter the title" }]}
             >
               <Input
-                onChange={(e) => setAudioEdit((prev)=> ({...prev, artist: e.target.value}))}
+                onChange={(e) => setAudioEdit((prev) => ({ ...prev, artist: e.target.value }))}
                 placeholder="Type here"
               />
             </Form.Item>
@@ -725,7 +786,7 @@ const Audios: React.FC<ProductListingProps> = () => {
               ]}
             >
               <Input.TextArea
-                onChange={(e) => setAudioEdit((prev)=> ({...prev, description: e.target.value}))}
+                onChange={(e) => setAudioEdit((prev) => ({ ...prev, description: e.target.value }))}
                 placeholder="Type here"
                 rows={4}
               />
@@ -746,10 +807,17 @@ const Audios: React.FC<ProductListingProps> = () => {
                   }
                   onPlaceChanged={hanldlePlaceChanged}
                 >
-                  <Input className="w-full" placeholder="Search location" />
+                  {/* <Input className="w-full" placeholder="Search location" /> */}
+                  <Input
+                  // defaultValue={audioEdit?.location?.address}
+                    className="w-full"
+                    placeholder="Search location"
+                    value={locationPreview} // Set the preview value in the input
+                    onChange={(e) => setLocationPreview(e.target.value)} // Update preview value on typing
+                  />
                 </Autocomplete>
                 {/* display google map */}
-                <GoogleMap
+                {latitude && longitude && <GoogleMap
                   mapContainerStyle={{
                     borderRadius: "10px",
 
@@ -762,6 +830,8 @@ const Audios: React.FC<ProductListingProps> = () => {
                 >
                   <Marker position={{ lat: latitude, lng: longitude }} />
                 </GoogleMap>
+
+                }
               </LoadScript>
             </Form.Item>
             {/* Upload Button */}

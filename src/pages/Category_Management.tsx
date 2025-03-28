@@ -8,6 +8,7 @@ import {
   notification,
   Form,
   Upload,
+  Spin,
 } from "antd";
 import { Pencil, Search, Trash, Eye } from "lucide-react";
 import React, { useState, useEffect, useId } from "react";
@@ -446,6 +447,11 @@ const Manage_Users = () => {
 
   return (
     <div>
+       {isLoading ? (
+        <Spin size="large" tip="Loading data..." />
+      ) : (
+      ""
+      )}
       <div className="flex justify-end">
         <Button
           onClick={handleAddCategory}
