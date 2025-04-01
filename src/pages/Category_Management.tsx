@@ -60,6 +60,7 @@ const Manage_Users = () => {
   const [featuredAddAndRemove] = useFeaturedAddAndRemoveMutation();
   const [updateCategories] = useUpdateCategoriesMutation();
   const [deleteCategory] = useDeleteCategoryMutation();
+  const [fileList, setFileList] = useState([]);
   const [modalData, setModalData] = useState({
     title: "",
     description: "",
@@ -84,7 +85,7 @@ const Manage_Users = () => {
 
   const { title, artwork, description } = categoryEdit || {};
 
- 
+
   useEffect(() => {
     if (categoryEdit) {
       form.setFieldsValue({
@@ -109,10 +110,15 @@ const Manage_Users = () => {
   }, [categoryEdit, form]);
 
   const handleImageChanges = (info: any) => {
+    const latestFile = info.file; // Get the latest uploaded file
+    console.log("latest file", latestFile)
+    setFileList([latestFile]); // Keep only the latest file
+  
     // Handle image change: update the form state with new image file or file list
     if (info.fileList.length > 0) {
       form.setFieldsValue({
-        image: info.fileList, // Update image list in form state
+        // image: info.fileList, // Update image list in form state
+        image: [latestFile]
       });
     }
   };
@@ -153,7 +159,7 @@ const Manage_Users = () => {
   console.log("userdata ++++++++++++++++", userDataSource);
   const columns = [
     {
-      title: "Users",
+      title: "Categories",
       dataIndex: "image",
       key: "image",
       render: (_: any, record: UserData) => (
@@ -181,12 +187,7 @@ const Manage_Users = () => {
       key: "action",
       render: (_: any, record: UserData) => (
         <div className="flex items-center justify-end gap-3">
-          {/* <button
-            onClick={() => handleViewDetails(record.sId)}
-            className="hover:bg-primary p-1 rounded bg-blue"
-          >
-            <Eye />
-          </button> */}
+
           <button
             onClick={() => editCategory(record.action)}
             className="hover:bg-primary p-1 rounded bg-blue"
@@ -302,25 +303,30 @@ const Manage_Users = () => {
     console.log("109", action);
     setUserData(action);
     setOpenDeleteModal(true);
-    try {
-      const formData = new FormData();
+    // try {
+    //   const formData = new FormData();
 
-      const res = await deleteCategory(action?.sId);
-      console.log("resDlete", res);
-    } catch (error) {
-      console.log(error);
-    }
+    //   const res = await deleteCategory(action?.sId);
+    //   console.log("resDlete", res);
+    // } catch (error) {
+    //   console.log(error);
+    // }
   };
 
   const onDeleteConfirm = async () => {
     console.log("113", userData);
     if (userData?.sId) {
       try {
-        await deleteUser({ id: userData?.sId });
-        setOpenDeleteModal(false);
-        console.log("User deleted successfully");
+        const formData = new FormData();
+
+        const res = await deleteCategory(userData?.sId);
+        setOpenDeleteModal(false)
+        console.log("resDlete", res);
+        if(res){
+          setOpenDeleteModal(false);
+        }
       } catch (error) {
-        console.error("Failed to delete user:", error);
+        console.log(error);
       }
     }
   };
@@ -447,10 +453,10 @@ const Manage_Users = () => {
 
   return (
     <div>
-       {isLoading ? (
+      {isLoading ? (
         <Spin size="large" tip="Loading data..." />
       ) : (
-      ""
+        ""
       )}
       <div className="flex justify-end">
         <Button
@@ -473,7 +479,7 @@ const Manage_Users = () => {
           columns={columns}
           pagination={{
             pageSize,
-            total: data?.data?.meta?.total || 50,
+            // total: data?.data?.meta?.total || 50,
             current: currentPage,
             onChange: handlePage,
           }}
@@ -540,8 +546,9 @@ const Manage_Users = () => {
                 onChange={handleImageChanges}
                 name="file"
                 beforeUpload={() => false} // Prevent automatic upload
-                listType="picture"
+                listType="picture-card"
                 accept="image/*"
+                // fileList={fileList}
               >
                 <Button>Upload Image</Button>
               </Upload>
@@ -570,7 +577,7 @@ const Manage_Users = () => {
         <Modal
           visible={openDeleteModal}
           onCancel={() => setOpenDeleteModal(false)}
-          title="Delete User"
+          title="Delete Category"
           footer={[
             <Button key="cancel" onClick={() => setOpenDeleteModal(false)}>
               Cancel
@@ -586,7 +593,10 @@ const Manage_Users = () => {
             </Button>,
           ]}
         >
-          <p>Are you sure you want to delete this user?</p>
+          <p className="text-red-500">
+            Are you sure you want to delete
+             <strong className="text-black text-lg"> {userData?.name || "this category"}</strong>?
+          </p>
         </Modal>
 
         <Modal

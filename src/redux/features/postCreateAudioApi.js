@@ -9,6 +9,7 @@ const postCreateAudioApi = baseApi.injectEndpoints({
           body: data,
          
         }),
+        invalidatesTags: ["Audio"]
       }),
     }),
   });

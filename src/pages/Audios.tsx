@@ -94,6 +94,7 @@ const Audios: React.FC<ProductListingProps> = () => {
   const [artist, setArtist] = useState("");
   const [des, setDes] = useState("");
   const [audioId, setAudioId] = useState();
+  const [address, setAddress] = useState("")
   const [form] = Form.useForm();
 
   const [postCreateAudio] = usePostCreateAudioMutation();
@@ -123,7 +124,7 @@ const Audios: React.FC<ProductListingProps> = () => {
     category: item?.category?.title,
     language: item?.language,
     artist: item?.artist || "artist name",
-    quantity: "Quantity",
+    address: address,
     created_at: item?.created_at.slice(0, 10),
     action: {
       sId: item?.id,
@@ -141,7 +142,7 @@ const Audios: React.FC<ProductListingProps> = () => {
 
   const columns = [
     {
-      title: "Listing",
+      title: "Audios",
       dataIndex: "image",
       key: "image",
       render: (_: any, record: UserData) => (
@@ -336,6 +337,7 @@ const Audios: React.FC<ProductListingProps> = () => {
     formData.append("language", "english");
     const res = await postCreateAudio(formData);
     if(res?.data.success === true){
+      setOpenAddAudioModal(false)
       notification.open({
         message: "Audio Added",
         description: "Your audio file has been successfully added.",
@@ -454,7 +456,7 @@ const Audios: React.FC<ProductListingProps> = () => {
       }
     }
   }, [audioEdit, form]);
-const [address, setAddress] = useState("")
+
 console.log("address", address)
 
   const fetchAddress = async (lat, lng) => {
@@ -795,7 +797,7 @@ console.log("address", address)
             <Form.Item
               name="location"
               label="Location"
-              rules={[{ required: true, message: "Please enter the location" }]}
+              // rules={[{ required: true, message: "Please enter the location" }]}
             >
               <LoadScript
                 googleMapsApiKey={googleMapApiKey}

@@ -23,10 +23,10 @@ const Manage_Users = () => {
   const { data, isLoading, isError } = searchTerm
     ? useSearchUsersQuery(searchTerm)
     : useGetAllUsersQuery({
-        page: currentPage,
-        perPage: pageSize,
-      });
-console.log("29", data?.users?.data);
+      page: currentPage,
+      perPage: pageSize,
+    });
+  console.log("29", data?.users?.data);
   const { data: userDetails } = useGetUserDetailsQuery(userId, { skip: !userId });
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const [putChangeUserStatus, { isLoading: isUpdating }] = usePutChangeUserStatusMutation();
@@ -41,14 +41,14 @@ console.log("29", data?.users?.data);
     image: <img src={user?.avatar || image} className="w-9 h-9 rounded" alt="avatar" />,
     name: user?.name,
     email: user.email,
-    role: user?.role|| "N/A",
+    role: user?.role || "N/A",
     level: user.level || "N/A",
     status: user.status === "banned" ? "Blocked" : "Active",
     action: {
       sId: user.id,
       image: <img src={user.avatar || image} className="w-9 h-9 rounded" alt="avatar" />,
       name: user.name,
-      role: user?.role|| "N/A",
+      role: user?.role || "N/A",
       dateOfBirth: "24-05-2024",
       contact: "0521545861520",
       status: user.status,
@@ -95,9 +95,9 @@ console.log("29", data?.users?.data);
   const handlePage = (page: number) => setCurrentPage(page);
 
   const handleUser = (action: UserAction) => {
-    console.log("97",action);
+    console.log("97", action);
     setUserData(action);
-    setStatus(action.status); 
+    setStatus(action.status);
     setOpenModel(true);
   };
 
@@ -145,7 +145,7 @@ console.log("29", data?.users?.data);
   };
 
   if (isLoading) return <p>Loading users...</p>;
-  if (isError) return <p>Error loading users. Please try again later.</p>;
+  // if (isError) return <p>Error loading users. Please try again later.</p>;
 
   return (
     <div>

@@ -8,7 +8,7 @@ const deleteCategorypi = baseApi.injectEndpoints({
                 method: 'DELETE',
                 // body: { _method: "DELETE" },
             }),
-            invalidatesTags: ["Category"],
+            invalidatesTags: ["Categories"],
         }),
     }),
 });

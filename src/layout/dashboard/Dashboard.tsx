@@ -220,10 +220,10 @@ const Dashboard: React.FC = () => {
             <span className="text-[#B0B0B0]">Hello</span> 👋
           </h1>
         );
-      case "/productListing":
+      case "/audioMother":
         return (
           <h1 className="text-[#333333] font-bold text-[24px]">
-            Manage Listings
+            All Audios
           </h1>
         );
       case "/category_management":
@@ -236,8 +236,8 @@ const Dashboard: React.FC = () => {
         return (
           <h1 className="text-[#333333] font-bold text-[24px]">User List</h1>
         );
-      case "/love":
-        return <h1 className="text-[#333333] font-bold text-[24px]">Love</h1>;
+      case "/subscription":
+        return <h1 className="text-[#333333] font-bold text-[24px]">Subscriptions</h1>;
       case "/transactions":
         return (
           <h1 className="text-[#333333] font-bold text-[24px]">Transactions</h1>

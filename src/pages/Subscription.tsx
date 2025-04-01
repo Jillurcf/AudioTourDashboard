@@ -132,7 +132,7 @@ const Subscription: React.FC = () => {
               <p className="text-sm text-green-500">
                 {plan.name
                   ? "Unlimited audios"
-                  : `${plan?.plan_name} upto ${plan.audio_limit} audios`}
+                  : `${plan?.plan_name} up to ${plan.audio_limit} audios`}
               </p>
              
               <div className="mt-4 flex justify-center gap-4">
