@@ -26,7 +26,7 @@ const Manage_Users = () => {
       page: currentPage,
       perPage: pageSize,
     });
-  console.log("29", data?.users?.data);
+  console.log("29", data?.users?.total);
   const { data: userDetails } = useGetUserDetailsQuery(userId, { skip: !userId });
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const [putChangeUserStatus, { isLoading: isUpdating }] = usePutChangeUserStatusMutation();
@@ -43,6 +43,7 @@ const Manage_Users = () => {
     email: user.email,
     role: user?.role || "N/A",
     level: user.level || "N/A",
+    created_at: user?.created_at.slice(0, 10) || "",
     status: user.status === "banned" ? "Blocked" : "Active",
     action: {
       sId: user.id,
@@ -51,6 +52,7 @@ const Manage_Users = () => {
       role: user?.role || "N/A",
       dateOfBirth: "24-05-2024",
       contact: "0521545861520",
+        created_at: user?.created_at.slice(0, 10) || "",
       status: user.status,
       email: user.email,
     },
@@ -70,7 +72,7 @@ const Manage_Users = () => {
     },
     { title: "Email", dataIndex: "email", key: "email" },
     { title: "Role", dataIndex: "role", key: "role" },
-    // { title: "Level", dataIndex: "level", key: "level" },
+    { title: "Created at", dataIndex: "created_at", key: "created_at" },
     // { title: "Status", dataIndex: "status", key: "status" },
     // {
     //   title: <div className="text-right">Action</div>,
@@ -162,7 +164,7 @@ const Manage_Users = () => {
           columns={columns}
           pagination={{
             pageSize,
-            total: data?.data?.meta?.total || 50,
+            total: data?.users?.total || "",
             current: currentPage,
             onChange: handlePage,
           }}

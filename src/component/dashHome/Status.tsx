@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import SelectBox from "../share/SelectBox";
 import { HiMiniUsers } from "react-icons/hi2";
 import { SiPaypal } from "react-icons/si";
+import { MdCurrencyExchange } from "react-icons/md";
 import { FcComboChart } from "react-icons/fc";
 import "./Style_dashboard.css";
 import { useGetDashHomeStatusApiQuery } from "../../redux/features/getDashHomeStatusApi";
@@ -30,7 +31,7 @@ const Status: React.FC = () => {
     },
     {
       id: 2,
-      icon: <SiPaypal size={20} />,
+      icon: <MdCurrencyExchange size={20} />,
       value: `$${data?.totalEarning}` || 0,
       title: "Total earnings",
     },

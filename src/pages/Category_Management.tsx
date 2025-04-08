@@ -66,7 +66,8 @@ const Manage_Users = () => {
     description: "",
     image: null,
   });
-  console.log("modal Data", modalData?.image?.originFileObj.name);
+  // console.log("modal Data", modalData?.image?.originFileObj.name);
+  console.log("70", data?.categories?.length)
   const handleSearch = (value: string) => {
     setSearchTerm(value);
     setCurrentPage(1);
@@ -134,7 +135,7 @@ const Manage_Users = () => {
         />
       ),
       name: user?.title,
-      updateAt: user?.updated_at,
+      updateAt: user?.updated_at.slice(0, 10),
       role: user?.role || "N/A",
       level: user.level || "N/A",
       featured: user?.is_featured,
@@ -220,8 +221,9 @@ const Manage_Users = () => {
       console.log(res);
 
       // Optionally show success notification
-      notification.success({
-        message: `Featured status for user ${userId} updated to ${checked}`,
+      notification?.success({
+        message:  `Featured status updated`,
+        //  `Featured status for user ${userId} updated to ${checked}`,
       });
     } catch (error) {
       // Handle error gracefully
@@ -479,7 +481,7 @@ const Manage_Users = () => {
           columns={columns}
           pagination={{
             pageSize,
-            // total: data?.data?.meta?.total || 50,
+            total: data?.categories?.length || "",
             current: currentPage,
             onChange: handlePage,
           }}
@@ -535,7 +537,7 @@ const Manage_Users = () => {
               />
             </Form.Item>
 
-            <Form.Item
+            {/* <Form.Item
               label="Image"
               name="image"
               valuePropName="fileList"
@@ -546,9 +548,28 @@ const Manage_Users = () => {
                 onChange={handleImageChanges}
                 name="file"
                 beforeUpload={() => false} // Prevent automatic upload
-                listType="picture-card"
+                listType="picture"
                 accept="image/*"
+                maxCount={1}
                 // fileList={fileList}
+              >
+                <Button>Upload Image</Button>
+              </Upload>
+            </Form.Item> */}
+             <Form.Item
+              label="Image"
+              name="image"
+              valuePropName="fileList"
+              getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
+              rules={[{ required: true, message: "Please upload an image!" }]}
+            >
+              <Upload
+                onChange={handleImageChange}
+                name="file"
+                beforeUpload={() => false} // Prevent automatic upload
+                listType="picture"
+                accept="image/*"
+                maxCount={1}
               >
                 <Button>Upload Image</Button>
               </Upload>
@@ -706,16 +727,12 @@ const Manage_Users = () => {
                 beforeUpload={() => false} // Prevent automatic upload
                 listType="picture"
                 accept="image/*"
+                maxCount={1}
               >
                 <Button>Upload Image</Button>
               </Upload>
             </Form.Item>
-            {/* Image Preview */}
-            {imageUrl && (
-              <div style={{ marginTop: 10 }}>
-                <Image width={200} src={imageUrl} alt="Uploaded Preview" />
-              </div>
-            )}
+            
           </Form>
         </Modal>
       </div>
