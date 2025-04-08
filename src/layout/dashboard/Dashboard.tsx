@@ -345,7 +345,7 @@ const Dashboard: React.FC = () => {
               })}
             </div>
             <div className="flex gap-8 w-full">
-              <div className="flex gap-2 w-3/4 items-center">
+              <div className="flex gap-2 items-center">
                 <Popover
                   className="cursor-pointer"
                   placement="top"
@@ -357,11 +357,11 @@ const Dashboard: React.FC = () => {
                       height: "40px",
                       backgroundColor: "gray",
                     }}
-                    icon={<User size={25} />}
+                    icon={<User size={20} />}
                   />
                 </Popover>
                 <div className="space-y-4">
-                  <h1 className="text-black">{data?.data?.name}</h1>
+                  <h1 className="text-black">{data?.data?.name.slice(0, 18)}</h1>
                   <h1 className="text-black">{data?.data?.email}</h1>
                 </div>
               </div>
