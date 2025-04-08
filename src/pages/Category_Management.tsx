@@ -351,7 +351,7 @@ const Manage_Users = () => {
   };
 
   if (isLoading) return <p>Loading categories...</p>;
-  if (isError) return <p>Error loading users. Please try again later.</p>;
+  if (isError) return <p>Error loading catetgories. Please try again later.</p>;
 
   const handleAddCategory = async () => {
     setIsModalVisible(true); // Show modal
