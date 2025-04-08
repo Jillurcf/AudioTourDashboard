@@ -350,7 +350,7 @@ const Manage_Users = () => {
     setOpenViewModal(false);
   };
 
-  if (isLoading) return <p>Loading users...</p>;
+  if (isLoading) return <p>Loading categories...</p>;
   if (isError) return <p>Error loading users. Please try again later.</p>;
 
   const handleAddCategory = async () => {
