@@ -3,6 +3,7 @@ import Slider from "react-slider";
 
 import { useAddSubscriptionMutation } from "../redux/features/postCreateSubscripton";
 import { useGetAllSubscriptionQuery } from "../redux/features/getAllSubscription";
+import { notification } from "antd";
 
 type Plan = {
   name: string;
@@ -31,7 +32,13 @@ const Subscription: React.FC = () => {
 
     try {
       const res = await addSubscription(formData).unwrap();
-      console.log("res", res);
+      console.log("res", res?.success === true);
+      if(res?.success === true){
+        notification.success({
+          message: "Subscrioption updated successfully",
+        });
+      }
+     
     } catch (error) {
       console.error("Error updating plan:", error);
       alert("Error updating plan. Please check the console for more details.");
@@ -58,36 +65,39 @@ const Subscription: React.FC = () => {
           return (
             <div
               key={plan?.id}
-              className={`p-6 bg-white rounded-lg shadow-lg text-center transition-all duration-300 hover:translate-y-[-5px] ${
-                plan?.plan_name.toLowerCase().includes("yearly")
+              className={`p-6 bg-white rounded-lg shadow-lg text-center transition-all duration-300 hover:translate-y-[-5px] ${plan?.plan_name.toLowerCase().includes("yearly")
                   ? "border-l-4 border-teal-500"
                   : plan?.plan_name.toLowerCase().includes("monthly")
-                  ? "border-l-4 border-blue-500"
-                  : plan?.plan_name.toLowerCase().includes("weekly")
-                  ? "border-l-4 border-blue-700"
-                  : "border-l-4 border-red-500"
-              }`}
+                    ? "border-l-4 border-blue-500"
+                    : plan?.plan_name.toLowerCase().includes("weekly")
+                      ? "border-l-4 border-blue-700"
+                      : "border-l-4 border-red-500"
+                }`}
             >
               <h2 className="text-xl font-semibold mb-4">{plan?.plan_name}</h2>
-              
+
               <div>
                 <label className="block text-sm mb-1">Price</label>
                 <input
+                  maxLength={10}
                   type="number"
                   value={plan?.price}
                   onChange={(e) => {
-                    setEditingPlan((prevPlans) => {
-                      // Make a copy of the current editingPlan
-                      const updatedPlans = [...prevPlans];
+                    if (e.target.value.length <= 10) {
+                      setEditingPlan((prevPlans) => {
+                        // Make a copy of the current editingPlan
+                        const updatedPlans = [...prevPlans];
 
-                      // Update the price of the plan at the specific index
-                      updatedPlans[index] = {
-                        ...updatedPlans[index],
-                        price: e.target.value,
-                      };
+                        // Update the price of the plan at the specific index
+                        updatedPlans[index] = {
+                          ...updatedPlans[index],
+                          price: e.target.value,
+                        };
 
-                      return updatedPlans;
-                    });
+                        return updatedPlans;
+                      });
+                    }
+
                   }}
                   className="w-3/4 p-2 text-center text-lg font-semibold border border-gray-300 rounded-md mb-4"
                 />
@@ -98,16 +108,20 @@ const Subscription: React.FC = () => {
                   type="number"
                   // value={editingPlan?.name === plan.name ? editingPlan?.audioLimit : plan.audioLimit}
                   value={plan?.audio_limit}
-                  onChange={(e) =>
-                    setEditingPlan((prevPlans) => {
-                      const updatedPlans = [...prevPlans];
-                      updatedPlans[index] = {
-                        ...updatedPlans[index],
-                        audio_limit: e.target.value, // Correct property name and value update
-                      };
-                      return updatedPlans; // Return the updated array to set the new state
-                    })
+                  onChange={(e) => {
+                    if(e.target.value.length <= 5){
+                      setEditingPlan((prevPlans) => {
+                        const updatedPlans = [...prevPlans];
+                        updatedPlans[index] = {
+                          ...updatedPlans[index],
+                          audio_limit: e.target.value, // Correct property name and value update
+                        };
+                        return updatedPlans; // Return the updated array to set the new state
+                      })
+                    }
+                    }
                   }
+                    
                   className="w-3/4 p-2 text-center text-lg font-semibold border border-gray-300 rounded-md mb-4"
                 />
               </div>
@@ -119,22 +133,22 @@ const Subscription: React.FC = () => {
                     plan?.plan_name === plan.plan_name
                       ? plan?.audio_limit
                       : plan.audio_limit === Infinity
-                      ? 100
-                      : plan.audio_limit
+                        ? 100
+                        : plan.audio_limit
                   }
-                  onChange={() => {}}
+                  onChange={() => { }}
                   disabled
                   className="w-full"
                 />
-                   <p className="text-yellow-400">(*Audio limit -1 for unlimited audio) </p>
+                <p className="text-yellow-400">(*Audio limit -1 for unlimited audio) </p>
               </div>
-           
+
               <p className="text-sm text-green-500">
                 {plan.name
                   ? "Unlimited audios"
                   : `${plan?.plan_name} up to ${plan.audio_limit} audios`}
               </p>
-             
+
               <div className="mt-4 flex justify-center gap-4">
                 {plan?.plan_name === plan.plan_name ? (
                   <button
@@ -151,12 +165,12 @@ const Subscription: React.FC = () => {
                     Edit
                   </button>
                 )}
-                <button
+                {/* <button
                   className="text-red-500"
                   onClick={() => handleDeletePlan(plan)}
                 >
                   Delete
-                </button>
+                </button> */}
               </div>
             </div>
           );

@@ -114,7 +114,7 @@ const Manage_Users = () => {
     const latestFile = info.file; // Get the latest uploaded file
     console.log("latest file", latestFile)
     setFileList([latestFile]); // Keep only the latest file
-  
+
     // Handle image change: update the form state with new image file or file list
     if (info.fileList.length > 0) {
       form.setFieldsValue({
@@ -222,7 +222,7 @@ const Manage_Users = () => {
 
       // Optionally show success notification
       notification?.success({
-        message:  `Featured status updated`,
+        message: `Featured status updated`,
         //  `Featured status for user ${userId} updated to ${checked}`,
       });
     } catch (error) {
@@ -324,7 +324,7 @@ const Manage_Users = () => {
         const res = await deleteCategory(userData?.sId);
         setOpenDeleteModal(false)
         console.log("resDlete", res);
-        if(res){
+        if (res) {
           setOpenDeleteModal(false);
         }
       } catch (error) {
@@ -439,7 +439,7 @@ const Manage_Users = () => {
 
       // Handle response
       console.log("res", res);
-
+      setIsModalVisible(false)
       // Show success notification
       notification.success({
         message: "Category Added Successfully",
@@ -504,9 +504,13 @@ const Manage_Users = () => {
               label="Title"
               name="title"
               initialValue={categoryEdit?.title} // Set initial value for the title
-              rules={[{ required: true, message: "Please input the title!" }]}
+              rules={[
+                { required: true, message: "Please input the title!" },
+                { max: 30, message: "Title must be at most 30 characters!" }
+              ]}
             >
               <Input
+              maxLength={30}
                 value={categoryEdit?.title}
                 onChange={(e) =>
                   setCategoryEdit({ ...categoryEdit, title: e.target.value })
@@ -524,6 +528,7 @@ const Manage_Users = () => {
               ]}
             >
               <Input.TextArea
+              maxLength={500}
                 value={categoryEdit?.description}
                 onChange={(e) =>
                   setCategoryEdit({
@@ -556,7 +561,7 @@ const Manage_Users = () => {
                 <Button>Upload Image</Button>
               </Upload>
             </Form.Item> */}
-             <Form.Item
+            <Form.Item
               label="Image"
               name="image"
               valuePropName="fileList"
@@ -614,9 +619,9 @@ const Manage_Users = () => {
             </Button>,
           ]}
         >
-          <p className="text-red-500">
+          <p className="text-black">
             Are you sure you want to delete
-             <strong className="text-black text-lg"> {userData?.name || "this category"}</strong>?
+            <strong className="text-black text-lg"> {userData?.name || "this category"}</strong>?
           </p>
         </Modal>
 
@@ -689,13 +694,18 @@ const Manage_Users = () => {
             <Form.Item
               label="Title"
               name="title"
-              rules={[{ required: true, message: "Please input the title!" }]}
+              rules={
+                [
+                  { required: true, message: "Please input the title!" },
+                  { max: 30, message: "Title must be at most 30 characters!" }
+                ]}
             >
               <Input
+              maxLength={30}
                 onChange={(e) =>
                   setModalData({ ...modalData, title: e.target.value })
                 }
-                placeholder="Enter the title"
+                placeholder="Enter the title (Max 30 character)"
               />
             </Form.Item>
 
@@ -707,6 +717,7 @@ const Manage_Users = () => {
               ]}
             >
               <Input.TextArea
+              maxLength={500}
                 onChange={(e) =>
                   setModalData({ ...modalData, description: e.target.value })
                 }
@@ -732,7 +743,7 @@ const Manage_Users = () => {
                 <Button>Upload Image</Button>
               </Upload>
             </Form.Item>
-            
+
           </Form>
         </Modal>
       </div>
