@@ -9,6 +9,7 @@ const postAddFaqApi = baseApi.injectEndpoints({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ["faqs"]
     }),
   }),
 });

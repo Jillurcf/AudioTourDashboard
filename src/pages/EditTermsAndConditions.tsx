@@ -32,7 +32,8 @@ const EditTermsAndCondition: React.FC = () => {
       const cleanedContent = div.textContent || div.innerHTML || "";
       const formData = new FormData()
       formData.append("type", "terms")
-      formData.append("content", cleanedContent)
+      formData.append("content", content)
+      // formData.append("content", cleanedContent)
       // Make the API call
       const response = await postAboutus(formData).unwrap();
 

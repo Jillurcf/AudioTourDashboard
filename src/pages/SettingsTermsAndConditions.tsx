@@ -39,7 +39,9 @@ const SettingsTermsAndConditions = () => {
         </div>
       </div>
       <div className="pl-10 text-justify py-12">
-        <p>{data?.page?.content}</p>
+        {/* <p>{data?.page?.content}</p> */}
+        <div className="prose max-w-none text-justify " 
+          dangerouslySetInnerHTML={{ __html: data?.page?.content }} ></div>
       </div>
       <div className="flex justify-end">
         <Button

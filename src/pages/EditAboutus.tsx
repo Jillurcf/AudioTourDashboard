@@ -33,7 +33,8 @@ const EditAboutus: React.FC = () => {
       // Make the API call
       const formData = new FormData()
       formData.append("type", "about")
-      formData.append("content", cleanedContent)
+      // formData.append("content", cleanedContent)
+      formData.append("content", content)
       const response = await postAboutus(formData).unwrap();
       console.log("aboutres", response)
 

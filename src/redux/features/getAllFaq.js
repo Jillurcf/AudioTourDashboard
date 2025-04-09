@@ -5,7 +5,7 @@ const getAllFaqApi = baseApi.injectEndpoints({
         getAllFaq:builder.query({
             query:() => `/admin/faq`,
             
-            providesTags: ["Faqs"],
+            providesTags: ["faqs"],
         })
     })
 })

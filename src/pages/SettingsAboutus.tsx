@@ -57,7 +57,9 @@ const Settings_AboutUs = () => {
         {noData ? (
           <p>No data found</p>
         ) : (
-          <p>{content}</p>
+          // <p>{content}</p>
+          <div className="prose max-w-none text-justify " 
+          dangerouslySetInnerHTML={{ __html: content }} ></div>
         )}
       </div>
       <div className="flex justify-end">

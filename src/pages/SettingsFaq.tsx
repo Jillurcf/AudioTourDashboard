@@ -18,7 +18,7 @@ interface FaqData {
 
 const SettingsFaq: React.FC = () => {
   const { data, isLoading, isError } = useGetAllFaqQuery({});
-  const [addFaq] = useAddFaqMutation();
+  const [addFaq, {refetch}] = useAddFaqMutation();
   const [updateFaq] = useUpdateFaqMutation();
   const [deleteFaq] = useDeleteFaqMutation();
   const allFaq = data || [];
@@ -84,6 +84,7 @@ const SettingsFaq: React.FC = () => {
 
       if (isNewFaq) {
         const response = await addFaq(faqDetails).unwrap();
+       
         console.log("faq response", response)
         if (response?.success === true) {
           const createdFaq = response?.faq;
@@ -97,9 +98,11 @@ const SettingsFaq: React.FC = () => {
             },
           }));
           message.success("FAQ created successfully.");
+          
         } else {
           message.error("Failed to create FAQ.");
         }
+       
       } else {
         const response = await updateFaq({
           id: key,
@@ -116,11 +119,13 @@ const SettingsFaq: React.FC = () => {
           message.error("Failed to update FAQ.");
         }
       }
-
+     
       setEditingPanel(null);
+      
     } catch (error) {
       message.error("An error occurred while saving the FAQ.");
     }
+  
   };
 
   const handleCancel = () => {

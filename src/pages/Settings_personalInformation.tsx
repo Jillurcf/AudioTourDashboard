@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { Upload, Input, Button, Form, message } from 'antd';
+import { Upload, Input, Button, Form, message, Modal } from 'antd';
 import type { UploadFile, UploadProps, FormProps } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
@@ -23,6 +23,9 @@ interface FieldType {
 const SettingsPersonalInformation: React.FC = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [previewImage, setPreviewImage] = useState<string | undefined>(undefined);
+  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
+  const [previewTitle, setPreviewTitle] = useState('');
+
   const [form] = Form.useForm();
 
   // Fetch personal information data
@@ -45,7 +48,7 @@ const SettingsPersonalInformation: React.FC = () => {
         setFileList([
           {
             uid: '-1',
-            name: 'profile.png',
+            name: data.data?.name || 'profile.png',
             status: 'done',
             url: imageUrl, // Set the existing image URL
           } as UploadFile,
@@ -58,62 +61,81 @@ const SettingsPersonalInformation: React.FC = () => {
   }, [data, isError, form]);
   const onChange: UploadProps['onChange'] = async ({ fileList: newFileList }) => {
     setFileList(newFileList);
-  
+
     if (newFileList.length > 0) {
       const uploadedFile = newFileList[0].originFileObj; // Get the uploaded file
-  
+
       if (uploadedFile) {
         const formData = new FormData();
         formData.append('_method', 'PUT');
         formData.append('image', uploadedFile, uploadedFile.name); // Append the image file to FormData
-  
-        try {
-          const response = await updateImage(formData); // Call the mutation
-          console.log('Image upload response:', response);
-  
-          if (response) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Image Updated',
-              text: 'Your profile image has been successfully updated!',
-              timer: 3000,
-              toast: true,
-              position: 'center',
-              showConfirmButton: false,
-            });
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Failed to update the image.',
-            });
-          }
-        } catch (error) {
-          console.error('Image upload error:', error);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'An error occurred while updating the image.',
-          });
-        }
+
+        // try {
+        //   const response = await updateImage(formData); // Call the mutation
+        //   console.log('Image upload response:', response);
+
+        //   if (response) {
+        //     Swal.fire({
+        //       icon: 'success',
+        //       title: 'Image Updated',
+        //       text: 'Your profile image has been successfully updated!',
+        //       timer: 3000,
+        //       toast: true,
+        //       position: 'center',
+        //       showConfirmButton: false,
+        //     });
+        //   } else {
+        //     Swal.fire({
+        //       icon: 'error',
+        //       title: 'Error',
+        //       text: 'Failed to update the image.',
+        //     });
+        //   }
+        // } catch (error) {
+        //   console.error('Image upload error:', error);
+        //   Swal.fire({
+        //     icon: 'error',
+        //     title: 'Error',
+        //     text: 'An error occurred while updating the image.',
+        //   });
+        // }
       }
     }
   };
-  
+
+  // const onPreview = async (file: UploadFile) => {
+  //   let src = file.url as string;
+  //   if (!src) {
+  //     src = await new Promise<string>((resolve) => {
+  //       const reader = new FileReader();
+  //       reader.readAsDataURL(file.originFileObj as FileType);
+  //       reader.onload = () => resolve(reader.result as string);
+  //     });
+  //   }
+  //   const image = new Image();
+  //   image.src = src;
+  //   const imgWindow = window.open(src);
+  //   imgWindow?.document.write(image.outerHTML);
+  // };
+
+
   const onPreview = async (file: UploadFile) => {
     let src = file.url as string;
+
     if (!src) {
       src = await new Promise<string>((resolve) => {
         const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj as FileType);
+        reader.readAsDataURL(file.originFileObj as File);
         reader.onload = () => resolve(reader.result as string);
       });
     }
-    const image = new Image();
-    image.src = src;
-    const imgWindow = window.open(src);
-    imgWindow?.document.write(image.outerHTML);
+
+    setPreviewImage(src);
+    setIsPreviewVisible(true);
+    setPreviewTitle(file.name || 'Image Preview');
   };
+
+
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     const formData = new FormData();
@@ -154,7 +176,7 @@ const SettingsPersonalInformation: React.FC = () => {
           // Update the image via the updateImage mutation
           await updateImage(imageData);
           message.success("Profile and image updated successfully");
-        }  
+        }
       }
 
       console.log("FormData content:", Array.from(formData.entries()));
@@ -182,6 +204,7 @@ const SettingsPersonalInformation: React.FC = () => {
           </Upload>
         </ImgCrop>
       </div>
+
       <Form
         name="basic"
         form={form}
@@ -194,64 +217,80 @@ const SettingsPersonalInformation: React.FC = () => {
         <Form.Item<FieldType>
           name="name"
           label="Name"
-          rules={[{ required: false, message: 'Please input your name!' }]}
+          rules={
+            [
+              { required: false, message: 'Please input your name!' },
+              { max: 30, message: 'Text atmost 30 character' }
+
+            ]}
         >
-          <Input placeholder="Name" className='h-12' />
+          <Input
+
+            maxLength={30}
+            minLength={6}
+            placeholder="Name" className='h-12' />
         </Form.Item>
         <Form.Item<FieldType>
           name="email"
           label="Email"
-          rules={[{ required: false, message: 'Please input your name!' }]}
+          
         >
-          <Input placeholder="Name" className='h-12' />
+          <Input
+            readOnly
+            placeholder="Your email" className='h-12' />
+            
         </Form.Item>
         <Form.Item<FieldType>
           name="contact"
-          label="contact"
-          rules={[{ required: false, message: 'Please input your name!' }]}
+          label="Contact"
+          
+          rules={
+            [
+              { required: false, message: 'Please add contact' },
+              { max: 14, message: 'Contact atmost 14 digit' },
+              { min: 11, message: 'Contact minimum 11 digit' }
+
+            ]}
         >
-          <Input placeholder="Contact no" className='h-12' />
+          <Input
+          type='number'
+            maxLength={14}
+            minLength={11}
+
+            placeholder="Your Contact" className='h-12' />
         </Form.Item>
-        
         {/* <Form.Item<FieldType>
-          name="oldPassword"
-          label="Old Password"
-          rules={[{ required: true, message: 'Please input your old password!' }]}
+
+          name="contact"
+          label="Contact"
+          rules={[
+            { required: false, message: 'Please input your name!' },
+            { max: 14, message: 'Contack atmost 14 chaaracter' }
+          ]}
         >
-          <Input.Password
-            placeholder='Old Password'
-            className='h-12'
-            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-          />
-        </Form.Item>
-        <Form.Item<FieldType>
-          name="newPassword"
-          label="New Password"
-          rules={[{ required: true, message: 'Please input your new password!' }]}
-        >
-          <Input.Password
-            placeholder='New Password'
-            className='h-12'
-            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-          />
-        </Form.Item>
-        <Form.Item<FieldType>
-          name="confirmPassword"
-          label="Confirm Password"
-          rules={[{ required: true, message: 'Please confirm your password!' }]}
-        >
-          <Input.Password
-            placeholder='Confirm Password'
-            className='h-12'
-            iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-          />
+          <Input
+            type='number'
+            minLength={11}
+            maxLength={14}
+            placeholder="Contact no" className='h-12' />
         </Form.Item> */}
+
+
         <Form.Item>
           <Button type="primary" className='w-full h-12 bg-[#4964C6]' htmlType="submit">
             Save Changes
           </Button>
         </Form.Item>
       </Form>
+      <Modal
+        visible={isPreviewVisible}
+        title={previewTitle}
+        footer={null}
+        onCancel={() => setIsPreviewVisible(false)}
+      >
+        <img alt="Preview" style={{ width: '100%' }} src={previewImage} />
+      </Modal>
+
     </div>
   );
 };

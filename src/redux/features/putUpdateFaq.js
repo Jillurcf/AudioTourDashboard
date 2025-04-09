@@ -12,7 +12,7 @@ const putUpdateFaqApi = baseApi.injectEndpoints({
                     body: data,
                 };
             },
-            invalidatesTags: ["Faqs"], 
+            invalidatesTags: ["faqs"], 
         }),
     }),
 });

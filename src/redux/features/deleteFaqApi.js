@@ -8,7 +8,7 @@ const deleteFaqApi = baseApi.injectEndpoints({
                 method: 'DELETE',
                 body: { _method: "DELETE" },
             }),
-            invalidatesTags: ["Faqs"],
+            invalidatesTags: ["faqs"],
         }),
     }),
 });

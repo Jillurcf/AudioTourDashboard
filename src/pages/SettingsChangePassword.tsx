@@ -81,9 +81,18 @@ const SettingsChangePassword: React.FC = () => {
         <Form.Item<FieldType>
           name="newPassword"
           label="New Password"
-          rules={[{ required: true, message: 'Please input your new password!' }]}
+          rules={[
+            { required: true, message: 'Please input your new password!' },
+            {
+              pattern: /^(?=.*[A-Z])(?=.*\d).+$/,
+              message: 'Password must contain at least one uppercase letter and one number.',
+            },
+          ]}
+          
         >
           <Input.Password
+          maxLength={20}
+          minLength={8}
             placeholder="New Password"
             className="h-12"
             iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
@@ -91,9 +100,16 @@ const SettingsChangePassword: React.FC = () => {
         </Form.Item>
 
         <Form.Item<FieldType>
+            rules={[
+              { required: true, message: 'Please input your new password!' },
+              {
+                pattern: /^(?=.*[A-Z])(?=.*\d).+$/,
+                message: 'Password must contain at least one uppercase letter and one number.',
+              },
+            ]}
           name="confirmPassword"
           label="Confirm Password"
-          rules={[{ required: true, message: 'Please confirm your password!' }]}
+         
         >
           <Input.Password
             placeholder="Confirm Password"
