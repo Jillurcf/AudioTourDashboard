@@ -242,7 +242,7 @@ const SettingsPersonalInformation: React.FC = () => {
         </Form.Item>
         <Form.Item<FieldType>
           name="contact"
-          label="Contact"
+          label="Phone number"
           
           rules={
             [
@@ -253,7 +253,7 @@ const SettingsPersonalInformation: React.FC = () => {
             ]}
         >
           <Input
-          type='number'
+          type='text'
             maxLength={14}
             minLength={11}
 

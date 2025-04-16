@@ -451,9 +451,9 @@ const Audios: React.FC<ProductListingProps> = () => {
         setBannerFileList([
           {
             uid: "-1", // Unique id to represent the existing image
-            name: "Existing Image", // Image name
+            name: "audio", // Image name
             status: "done", // Mark as done since it's already uploaded
-            url: audioEdit?.artwork, // URL of the existing image
+            url: audioEdit?.url, // URL of the existing image
           },
         ]);
       }
@@ -463,9 +463,9 @@ const Audios: React.FC<ProductListingProps> = () => {
         setFileList([
           {
             uid: "-1", // Unique id to represent the existing audio file
-            name: "Existing Audio", // Audio name
+            name: "banner", // Audio name
             status: "done", // Mark as done since it's already uploaded
-            url: audioEdit?.url, // URL of the existing audio
+            url: audioEdit?.artwork, // URL of the existing audio
           },
         ]);
       }

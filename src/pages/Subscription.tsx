@@ -108,19 +108,35 @@ const Subscription: React.FC = () => {
                   type="number"
                   // value={editingPlan?.name === plan.name ? editingPlan?.audioLimit : plan.audioLimit}
                   value={plan?.audio_limit}
+                  // onChange={(e) => {
+                  //   if(e.target.value.length <= 5){
+                  //     setEditingPlan((prevPlans) => {
+                  //       const updatedPlans = [...prevPlans];
+                  //       updatedPlans[index] = {
+                  //         ...updatedPlans[index],
+                  //         audio_limit: e.target.value, // Correct property name and value update
+                  //       };
+                  //       return updatedPlans; // Return the updated array to set the new state
+                  //     })
+                  //   }
+                  //   }
+                  // }
                   onChange={(e) => {
-                    if(e.target.value.length <= 5){
+                    const inputValue = e.target.value;
+                
+                    // Only allow numeric input and max length 5
+                    if (/^\d{0,5}$/.test(inputValue)) {
                       setEditingPlan((prevPlans) => {
                         const updatedPlans = [...prevPlans];
+                
                         updatedPlans[index] = {
                           ...updatedPlans[index],
-                          audio_limit: e.target.value, // Correct property name and value update
+                          audio_limit: inputValue,
                         };
-                        return updatedPlans; // Return the updated array to set the new state
-                      })
-                    }
-                    }
-                  }
+                
+                        return updatedPlans;
+                      });
+                    }}}
                     
                   className="w-3/4 p-2 text-center text-lg font-semibold border border-gray-300 rounded-md mb-4"
                 />
