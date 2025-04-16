@@ -614,7 +614,8 @@ const Audios: React.FC<ProductListingProps> = () => {
                       // fileList={bannerFileList}
                       onChange={handleUploadAudio}
                       beforeUpload={() => false} // Prevent automatic upload
-                      style={{ width: "100%", height: "200%" }} // Set to width 100% for responsiveness and height 'auto'
+                      style={{ width: "200px", height: "auto" }} 
+                      className="w-full overflow-hidden"// Set to width 100% for responsiveness and height 'auto'
                     >
                       {bannerFileList.length < 1 && "+ Upload audio"}
                     </Upload>

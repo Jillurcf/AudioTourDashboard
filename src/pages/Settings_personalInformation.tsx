@@ -25,7 +25,8 @@ const SettingsPersonalInformation: React.FC = () => {
   const [previewImage, setPreviewImage] = useState<string | undefined>(undefined);
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [previewTitle, setPreviewTitle] = useState('');
-
+  const [error, setError] = useState<string | null>(null);  
+console.log("error+++++++++", error)
   const [form] = Form.useForm();
 
   // Fetch personal information data
@@ -154,16 +155,22 @@ const SettingsPersonalInformation: React.FC = () => {
 
     try {
       const response = await updatePersonalInformation(formData);
-      console.log("formdata", response);
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'Profile and image updated successfully!',
-        timer: 3000,
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-      });
+      console.log("formdata", response?.error?.data?.message?.phone[0]);
+      setError(response?.error?.data?.message?.phone[0]);
+      if(response?.data.success === true){
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Profile and image updated successfully!',
+          timer: 3000,
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+        });
+      }
+      // console.log("formdata", response?.data.success === true);
+    
+     
 
       // If the personal information update is successful, update the image as well.
       if (response.status) {
@@ -181,7 +188,7 @@ const SettingsPersonalInformation: React.FC = () => {
 
       console.log("FormData content:", Array.from(formData.entries()));
     } catch (error) {
-      message.error("Failed to update profile");
+      console.log("Failed to update profile");
     }
   };
 
@@ -259,6 +266,11 @@ const SettingsPersonalInformation: React.FC = () => {
 
             placeholder="Your Contact" className='h-12' />
         </Form.Item>
+        {error && (
+          <div className="text-red-500 text-sm mb-4">
+            {error}
+          </div>
+        )}
         {/* <Form.Item<FieldType>
 
           name="contact"
