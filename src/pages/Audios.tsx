@@ -105,6 +105,8 @@ const Audios: React.FC<ProductListingProps> = () => {
   console.log("Single Audio", singleAudio)
   console.log("lat + lng ++++++++++++++++", latitude, longitude)
   console.log("lat + lng ++++++++++++++++", typeof latitude, typeof longitude)
+  // const googleMapApiKey = "AIzaSyC84mj3YlqcaBWRyi1pxloQ4n3JcbL93XY";
+  // const googleMapApiKey = "AIzaSyC7mE-qsx7rr8gw502UdtJ28hjcdc2_a-Y";
   const googleMapApiKey = "AIzaSyC84mj3YlqcaBWRyi1pxloQ4n3JcbL93XY";
   useEffect(() => {
     // console.log("fileList:", fileList);
@@ -245,29 +247,47 @@ const Audios: React.FC<ProductListingProps> = () => {
 
     setBannerFileList(updatedFileList); // Update the file list state
   };
-  const handleUploadChange = (info: any) => {
-    console.log("info", info);
-    let updatedFileList = info.fileList || []; // Ensure it's always an array
-    if (info.file.status !== "uploading") {
-      console.log(info.file, info.fileList);
+  // const handleUploadChange = (info: any) => {
+  //   console.log("info", info);
+  //   let updatedFileList = info.fileList || []; // Ensure it's always an array
+  //   if (info.file.status !== "uploading") {
+  //     console.log(info.file, info.fileList);
+  //   }
+  //   // Log the updated fileList for debugging
+  //   console.log("Updated fileList:", updatedFileList);
+
+  //   // if (info.file.status) {
+  //   //   message.success(`${info.file.name} file uploaded successfully`);
+  //   // } else {
+  //   //   message.error(`${info.file.name} file upload failed.`);
+  //   // }
+
+  //   if (info.file.status === "done") {
+  //     message.success(`${info.file.name} file uploaded successfully`);
+  //   } else if (info.file.status === "error") {
+  //     // message.error(`${info.file.name} file upload failed.`);
+  //     console.log("upload failed");
+  //   }
+
+  //   setFileList(updatedFileList); // Update the file list state
+  // };
+
+  const handleUploadChange = ({ fileList: newFileList, file, event }) => {
+    // Check if the file is a valid image and does not exceed size limit
+    const isImage = file.type.startsWith('image/');
+    if (!isImage) {
+      message.error('Only image files are allowed!');
+      return;
     }
-    // Log the updated fileList for debugging
-    console.log("Updated fileList:", updatedFileList);
 
-    // if (info.file.status) {
-    //   message.success(`${info.file.name} file uploaded successfully`);
-    // } else {
-    //   message.error(`${info.file.name} file upload failed.`);
-    // }
-
-    if (info.file.status === "done") {
-      message.success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === "error") {
-      // message.error(`${info.file.name} file upload failed.`);
-      console.log("upload failed");
+    // You can also add size limit validation (e.g., 2MB)
+    const isValidSize = file.size / 1024 / 1024 < 2; // 2MB
+    if (!isValidSize) {
+      message.error('File size must be less than 2MB');
+      return;
     }
 
-    setFileList(updatedFileList); // Update the file list state
+    setFileList(newFileList);
   };
 
   const hanldlePlaceChanged = () => {
@@ -336,16 +356,16 @@ const Audios: React.FC<ProductListingProps> = () => {
     formData.append("lng", longitude);
     formData.append("language", "english");
     const res = await postCreateAudio(formData);
-    if(res?.data.success === true){
+    if (res?.data.success === true) {
       setOpenAddAudioModal(false)
       notification.open({
         message: "Audio Added",
         description: "Your audio file has been successfully added.",
       });
-    }else{
+    } else {
       Alert("Please try again")
     }
-   
+
   };
 
 
@@ -419,10 +439,10 @@ const Audios: React.FC<ProductListingProps> = () => {
       form.setFieldsValue({
         category: audioEdit?.category?.title,
         title: audioEdit?.title,
-        artist: audioEdit?.artist || "Not exist",
+        artist: audioEdit?.artist || "",
         description: audioEdit?.description,
         // location: audioEdit?.location?.address || "",
-       
+
       });
       // setLocationPreview(audioEdit?.location?.address)
 
@@ -457,15 +477,15 @@ const Audios: React.FC<ProductListingProps> = () => {
     }
   }, [audioEdit, form]);
 
-console.log("address", address)
+  console.log("address", address)
 
   const fetchAddress = async (lat, lng) => {
     const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
-  
+
     try {
       const response = await fetch(url);
       const data = await response.json();
-  
+
       if (data && data.display_name) {
         setAddress(data.display_name);
         setLocationPreview(data.display_name)
@@ -477,7 +497,7 @@ console.log("address", address)
       setAddress("Error fetching address");
     }
   };
-  
+
 
 
   return (
@@ -557,12 +577,28 @@ console.log("address", address)
               <div className="w-[50%]">
                 <Form.Item label="Upload banner" name="audio">
                   <div className="w-[] items-center justify-center flex h-full border border-y-2 border-gray-200 p-8 rounded-2xl">
-                    <Upload
+                    {/* <Upload
                       name="banner"
                       listType="picture-card"
                       fileList={fileList}
                       onChange={handleUploadChange}
                       style={{ width: "100%", height: "auto" }} // Set to width 100% for responsiveness and height 'auto'
+                    >
+                      {fileList.length < 1 && "+ Upload image"}
+                    </Upload> */}
+                    <Upload
+                      name="banner"
+                      // listType="picture-card"
+                      // fileList={fileList}
+                      onChange={handleUploadChange}
+                      // style={{ width: "100%", height: "auto" }} // Set to width 100% for responsiveness and height 'auto'
+                      // showUploadList={{ showRemoveIcon: true }} // Show remove icon for uploaded images
+                      // name="file"
+                      beforeUpload={() => false} // Prevent automatic upload
+                      listType="picture"
+                      accept="image/*"
+                      maxCount={1}
+                      style={{ width: "100%", height: "200%" }} 
                     >
                       {fileList.length < 1 && "+ Upload image"}
                     </Upload>
@@ -574,10 +610,11 @@ console.log("address", address)
                   <div className="w-[] items-center justify-center flex h-full border border-y-2 border-gray-200 p-8 rounded-2xl">
                     <Upload
                       name="audio"
-                      listType="picture-card"
-                      fileList={bannerFileList}
+                      listType="picture"
+                      // fileList={bannerFileList}
                       onChange={handleUploadAudio}
-                      style={{ width: "100%", height: "auto" }} // Set to width 100% for responsiveness and height 'auto'
+                      beforeUpload={() => false} // Prevent automatic upload
+                      style={{ width: "100%", height: "200%" }} // Set to width 100% for responsiveness and height 'auto'
                     >
                       {bannerFileList.length < 1 && "+ Upload audio"}
                     </Upload>
@@ -643,7 +680,7 @@ console.log("address", address)
             <Form.Item
               name="location"
               label="Location"
-              rules={[{ required: true, message: "" }]}
+              // rules={[{ required: true, message: "" }]}
             >
               <LoadScript
                 googleMapsApiKey={googleMapApiKey}
@@ -657,7 +694,7 @@ console.log("address", address)
                 >
                   {/* <Input className="w-full" placeholder="Search location" /> */}
                   <Input
-                  // defaultValue={audioEdit?.location?.address}
+                    // defaultValue={audioEdit?.location?.address}
                     className="w-full"
                     placeholder="Search location"
                     value={locationPreview} // Set the preview value in the input
@@ -797,7 +834,7 @@ console.log("address", address)
             <Form.Item
               name="location"
               label="Location"
-              // rules={[{ required: true, message: "Please enter the location" }]}
+            // rules={[{ required: true, message: "Please enter the location" }]}
             >
               <LoadScript
                 googleMapsApiKey={googleMapApiKey}
@@ -811,7 +848,7 @@ console.log("address", address)
                 >
                   {/* <Input className="w-full" placeholder="Search location" /> */}
                   <Input
-                  // defaultValue={audioEdit?.location?.address}
+                    // defaultValue={audioEdit?.location?.address}
                     className="w-full"
                     placeholder="Search location"
                     value={locationPreview} // Set the preview value in the input
