@@ -26,7 +26,7 @@ const Manage_Users = () => {
       page: currentPage,
       perPage: pageSize,
     });
-  console.log("29", data?.users?.total);
+  console.log("29", data?.users?.data);
   const { data: userDetails } = useGetUserDetailsQuery(userId, { skip: !userId });
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const [putChangeUserStatus, { isLoading: isUpdating }] = usePutChangeUserStatusMutation();
@@ -41,6 +41,7 @@ const Manage_Users = () => {
     image: <img src={user?.avatar || image} className="w-9 h-9 rounded" alt="avatar" />,
     name: user?.name,
     email: user.email,
+    phone: user.phone,
     role: user?.role || "N/A",
     level: user.level || "N/A",
     created_at: user?.created_at.slice(0, 10) || "",
@@ -49,6 +50,7 @@ const Manage_Users = () => {
       sId: user.id,
       image: <img src={user.avatar || image} className="w-9 h-9 rounded" alt="avatar" />,
       name: user.name,
+      phone: user.phone,
       role: user?.role || "N/A",
       dateOfBirth: "24-05-2024",
       contact: "0521545861520",
@@ -71,6 +73,7 @@ const Manage_Users = () => {
       ),
     },
     { title: "Email", dataIndex: "email", key: "email" },
+    { title: "Contact no", dataIndex: "phone", key: "phone" },
     { title: "Role", dataIndex: "role", key: "role" },
     { title: "Created at", dataIndex: "created_at", key: "created_at" },
     // { title: "Status", dataIndex: "status", key: "status" },
