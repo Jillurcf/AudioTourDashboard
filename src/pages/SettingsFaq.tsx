@@ -31,6 +31,8 @@ const SettingsFaq: React.FC = () => {
   const [status, setStatus] = useState<string>("");
 
   useEffect(() => {
+    if (!allFaq?.faqs) return;
+
     const initialData: FaqData = {};
     allFaq?.faqs?.forEach((item: any) => {
       initialData[item.id] = {
@@ -40,7 +42,7 @@ const SettingsFaq: React.FC = () => {
       };
     });
     setPanelData(initialData);
-  }, [allFaq]);
+  }, [allFaq ]);
 
   const handleAddFaq = () => {
     const newKey = `new-${Date.now()}`;
@@ -132,7 +134,7 @@ const SettingsFaq: React.FC = () => {
     setEditingPanel(null);
   };
 
-  const items: CollapseProps["items"] = Object.keys(panelData).map((key) => ({
+  const items: CollapseProps["items"] = Object.keys(panelData)?.map((key) => ({
     key,
     label:
       editingPanel === key ? (
@@ -145,7 +147,7 @@ const SettingsFaq: React.FC = () => {
         <div className="items-center">
           <div className="flex justify-between">
             <div className="flex items-center">
-              <span>{panelData[key].question}</span>
+              <span>{panelData[key]?.question}</span>
             </div>
             <div>
               <Button
@@ -189,7 +191,7 @@ const SettingsFaq: React.FC = () => {
         </div>
       ) : (
         <div>
-          <p>{panelData[key].answer}</p>
+          <p>{panelData[key]?.answer}</p>
         </div>
       ),
   }));

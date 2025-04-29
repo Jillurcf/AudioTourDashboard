@@ -13,7 +13,7 @@ const Status: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<string>("weekly");
 
   // Fetch data based on the selected period
- const {data, isLoading, isError} = useGetDashHomeApiQuery({})
+  const { data, isLoading, isError } = useGetDashHomeApiQuery({})
   console.log("data", data?.usersCount);
   // Handle period change from SelectBox
   const handleSelectChange = (value: string) => {
@@ -73,28 +73,31 @@ const Status: React.FC = () => {
         {cardData.map((card, index) => (
           <div
             key={card.id}
-            className={`2xl:w-[450px] xl:w-[320px] lg:w-[190px] w-[450px] h-[170px] px-[20px] py-[32px] flex justify-center items-center rounded-2xl cursor-pointer ${
-              selectedCard === index
-                ? "bg-[#02B5AA] text-[#E8EBF0]"
-                : "border border-[#E7E7E7]"
-            }`}
+            className={`2xl:w-[450px] xl:w-[320px] lg:w-[190px] w-[450px] h-[170px] px-[20px] py-[32px] flex justify-center items-center rounded-2xl cursor-pointer ${selectedCard === index
+              ? "bg-[#02B5AA] text-[#E8EBF0]"
+              : "border border-[#E7E7E7]"
+              }`}
             onClick={() => setSelectedCard(index)}
           >
             <div>
               <div
-                className={`bg-[#F6F6F6] w-[47px] h-[47px] rounded-2xl flex items-center justify-center ${
-                  selectedCard === index
-                    ? "bg-white text-[#02B5AA]"
-                    : "bg-[#E8EBF0]"
-                }`}
+                className={`bg-[#F6F6F6] w-[47px] h-[47px] rounded-2xl flex items-center justify-center ${selectedCard === index
+                  ? "bg-white text-[#02B5AA]"
+                  : "bg-[#E8EBF0]"
+                  }`}
               >
                 {card.icon}
               </div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-secondary py-4 text-[34px] font-bold">
-                  {card.value}
-                </h1>
-              </div>
+              {cardData !== undefined && (
+                <div className="flex items-center gap-2">
+                  <h1 className="text-secondary py-4 text-[34px] font-bold">
+                    {card.value}
+                  </h1>
+                </div>
+              )}
+
+
+
               <h1 className="text-[16px] font-bold">{card.title}</h1>
               <p>{card.description}</p>
             </div>

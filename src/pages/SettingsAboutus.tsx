@@ -27,16 +27,16 @@ const Settings_AboutUs = () => {
     return <Spin tip="Loading..." className="flex justify-center mt-10" />;
   }
 
-  if (isError) {
-    return (
-      <Alert
-        message="Error"
-        description="Failed to load content."
-        type="error"
-        showIcon
-      />
-    );
-  }
+  // if (isError) {
+  //   return (
+  //     <Alert
+  //       message="Error"
+  //       description="Failed to load content."
+  //       type="error"
+  //       showIcon
+  //     />
+  //   );
+  // }
 
  
   const content = data?.page?.content;

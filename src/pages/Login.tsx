@@ -45,36 +45,46 @@ const Login: React.FC = () => {
       const response = await setData({ email, password });
       console.log("27, Response:", response);
       console.log("28", response);
-
-      if (response?.error) {
-        // Show error message from the server, if available
+      if(response?.data.success === false)
+      {
         Swal.fire({
           icon: "error",
           title: "Login Failed",
-          text: response.error?.message || "An error occurred.",
+          text: response?.data?.message
         });
-      } else if (response?.data) {
+      }else if (response?.data.success === true) {
         // Handle successful login
+        navigate("/");
         localStorage.setItem("token", response?.data?.access_token);
         if (remember) {
           console.log("50", remember);
           localStorage.setItem("rememberedEmail", email);
           localStorage.setItem("rememberedPassword", password);
+          Swal.fire({
+            position: "top-center",
+            icon: "success",
+            title: response.data.message,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+         
         } else {
           localStorage.removeItem("rememberedEmail");
           localStorage.removeItem("rememberedPassword");
         }
+
+      // if (response?.error) {
+      //   // Show error message from the server, if available
+      //   Swal.fire({
+      //     icon: "error",
+      //     title: "Login Failed",
+      //     text: response.error?.message || "An error occurred.",
+      //   });
+      // } 
         // localStorage.setItem("refresh_token", response.data?.data?.attributes?.token?.refreshToken);
         // localStorage.setItem("user-update", JSON.stringify(response.data.data));
 
-        Swal.fire({
-          position: "top-center",
-          icon: "success",
-          title: response.data.message,
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        navigate("/");
+        
       }
     } catch (error) {
       console.error("Network or unexpected error:", error);
